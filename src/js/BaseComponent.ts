@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { PureComponent } from 'react';
+import { PureComponent } from "react";
 
-import { Callback, EventListener } from './LocalState';
+import { Callback, EventListener } from "./LocalState";
 
 type OwnState = {
   ogImageUrl?: any;
 };
 
-export default abstract class BaseComponent<Props = any, State = any> extends PureComponent<
-  Props,
-  State & OwnState
-> {
+export default abstract class BaseComponent<
+  Props = any,
+  State = any
+> extends PureComponent<Props, State & OwnState> {
   unmounted?: boolean;
 
   // TODO: make this use Subscriptions instead of LocalState eventlisteners? or both?

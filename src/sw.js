@@ -1,11 +1,11 @@
-import { getFiles, setupPrecaching, setupRouting } from 'preact-cli/sw';
-import { BackgroundSyncPlugin } from 'workbox-background-sync';
-import { CacheableResponsePlugin } from 'workbox-cacheable-response';
-import { ExpirationPlugin } from 'workbox-expiration';
-import { registerRoute } from 'workbox-routing';
-import { CacheFirst, NetworkFirst, NetworkOnly } from 'workbox-strategies';
+import { getFiles, setupPrecaching, setupRouting } from "preact-cli/sw";
+import { BackgroundSyncPlugin } from "workbox-background-sync";
+import { CacheableResponsePlugin } from "workbox-cacheable-response";
+import { ExpirationPlugin } from "workbox-expiration";
+import { registerRoute } from "workbox-routing";
+import { CacheFirst, NetworkFirst, NetworkOnly } from "workbox-strategies";
 
-const bgSyncPlugin = new BackgroundSyncPlugin('apiRequests', {
+const bgSyncPlugin = new BackgroundSyncPlugin("apiRequests", {
   maxRetentionTime: 14 * 24 * 60,
 });
 
@@ -13,32 +13,32 @@ const assetUrls = getFiles();
 
 // Never cache POST requests
 registerRoute(
-  ({ request }) => request.method === 'POST',
+  ({ request }) => request.method === "POST",
   new NetworkOnly({
     plugins: [bgSyncPlugin],
-  }),
+  })
 );
 
 // Make root page load instantly, even if offline. Tradeoff: after app update, user will see old version until they refresh.
 registerRoute(
-  ({ url }) => url.pathname === '/',
+  ({ url }) => url.pathname === "/",
   new NetworkFirst({
-    cacheName: 'iris-main',
+    cacheName: "iris-main",
     networkTimeoutSeconds: 3,
     plugins: [
       new CacheableResponsePlugin({
         statuses: [0, 200], // no 404
       }),
     ],
-  }),
+  })
 );
 
 // Nip05 lookups cache first
 registerRoute(
-  ({ url }) => url.pathname.startsWith('/.well-known/nostr.json'),
+  ({ url }) => url.pathname.startsWith("/.well-known/nostr.json"),
   new CacheFirst({
     networkTimeoutSeconds: 5,
-    cacheName: 'iris-nip05',
+    cacheName: "iris-nip05",
     plugins: [
       new CacheableResponsePlugin({
         statuses: [0, 200],
@@ -49,7 +49,7 @@ registerRoute(
         purgeOnQuotaError: true,
       }),
     ],
-  }),
+  })
 );
 
 // Page urls like iris.to/username are often stale and should be updated.
@@ -58,13 +58,13 @@ registerRoute(
 registerRoute(
   ({ url }) => {
     return (
-      self.location.host.indexOf('localhost') !== 0 &&
+      self.location.host.indexOf("localhost") !== 0 &&
       url.origin === self.location.origin &&
       !assetUrls.includes(url.pathname) // these are cached later by setupPrecaching
     );
   },
   new NetworkFirst({
-    cacheName: 'pages-etc',
+    cacheName: "pages-etc",
     networkTimeoutSeconds: 3,
     plugins: [
       new ExpirationPlugin({
@@ -73,17 +73,20 @@ registerRoute(
         purgeOnQuotaError: true,
       }),
     ],
-  }),
+  })
 );
 
 // Iris.to user account requests should not be cached
-registerRoute(({ url }) => url.href.startsWith('https://api.iris.to/user/'), new NetworkOnly());
+registerRoute(
+  ({ url }) => url.href.startsWith("https://api.iris.to/user/"),
+  new NetworkOnly()
+);
 
 // Iris.to /events and /profiles requests should be cached
 registerRoute(
-  ({ url }) => url.href.startsWith('https://api.iris.to/'),
+  ({ url }) => url.href.startsWith("https://api.iris.to/"),
   new CacheFirst({
-    cacheName: 'iris-api',
+    cacheName: "iris-api",
     plugins: [
       new CacheableResponsePlugin({
         statuses: [0, 200],
@@ -94,14 +97,15 @@ registerRoute(
         purgeOnQuotaError: true,
       }),
     ],
-  }),
+  })
 );
 
 // Cache scaled images from proxy
 registerRoute(
-  ({ url }) => url.href.startsWith('https://imgproxy.iris.to/insecure/rs:fill:'),
+  ({ url }) =>
+    url.href.startsWith("https://imgproxy.iris.to/insecure/rs:fill:"),
   new CacheFirst({
-    cacheName: 'scaled-images',
+    cacheName: "scaled-images",
     plugins: [
       new CacheableResponsePlugin({
         statuses: [0, 200],
@@ -112,14 +116,14 @@ registerRoute(
         purgeOnQuotaError: true,
       }),
     ],
-  }),
+  })
 );
 
 // Cache full-size images, videos and other remote assets with limit and expiration time
 registerRoute(
   ({ url }) => url.origin !== self.location.origin,
   new CacheFirst({
-    cacheName: 'remote-assets',
+    cacheName: "remote-assets",
     plugins: [
       new CacheableResponsePlugin({
         statuses: [0, 200],
@@ -131,7 +135,7 @@ registerRoute(
         purgeOnQuotaError: true,
       }),
     ],
-  }),
+  })
 );
 
 setupRouting();

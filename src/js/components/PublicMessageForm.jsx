@@ -1,18 +1,18 @@
-import { PaperAirplaneIcon } from '@heroicons/react/24/outline';
-import { html } from 'htm/preact';
-import $ from 'jquery';
-import { createRef } from 'preact';
+import { PaperAirplaneIcon } from "@heroicons/react/24/outline";
+import { html } from "htm/preact";
+import $ from "jquery";
+import { createRef } from "preact";
 
-import Helpers from '../Helpers';
-import Icons from '../Icons';
-import * as EmojiButton from '../lib/emoji-button';
-import localState from '../LocalState';
-import { translate as t } from '../translations/Translation';
+import Helpers from "../Helpers";
+import Icons from "../Icons";
+import * as EmojiButton from "../lib/emoji-button";
+import localState from "../LocalState";
+import { translate as t } from "../translations/Translation";
 
-import MessageForm from './MessageForm';
-import SafeImg from './SafeImg';
-import SearchBox from './SearchBox';
-import Torrent from './Torrent';
+import MessageForm from "./MessageForm.jsx";
+import SafeImg from "./SafeImg";
+import SearchBox from "./SearchBox";
+import Torrent from "./Torrent.jsx";
 
 const mentionRegex = /\B@[\u00BF-\u1FFF\u2C00-\uD7FF\w]*$/;
 
@@ -21,8 +21,8 @@ class PublicMessageForm extends MessageForm {
 
   componentDidMount() {
     const textEl = $(this.newMsgRef.current);
-    this.picker = new EmojiButton({ position: 'top-start' });
-    this.picker.on('emoji', (emoji) => {
+    this.picker = new EmojiButton({ position: "top-start" });
+    this.picker.on("emoji", (emoji) => {
       textEl.val(textEl.val() + emoji);
       textEl.focus();
     });
@@ -34,14 +34,17 @@ class PublicMessageForm extends MessageForm {
     }
     if (!this.props.replyingTo) {
       localState
-        .get('channels')
-        .get('public')
-        .get('msgDraft')
+        .get("channels")
+        .get("public")
+        .get("msgDraft")
         .once((t) => !textEl.val() && textEl.val(t));
     } else {
       const currentHistoryState = window.history.state;
-      if (currentHistoryState && currentHistoryState['replyTo' + this.props.replyingTo]) {
-        textEl.val(currentHistoryState['replyTo' + this.props.replyingTo]);
+      if (
+        currentHistoryState &&
+        currentHistoryState["replyTo" + this.props.replyingTo]
+      ) {
+        textEl.val(currentHistoryState["replyTo" + this.props.replyingTo]);
       }
     }
   }
@@ -53,7 +56,7 @@ class PublicMessageForm extends MessageForm {
 
   async submit() {
     if (!this.props.replyingTo) {
-      localState.get('channels').get('public').get('msgDraft').put(null);
+      localState.get("channels").get("public").get("msgDraft").put(null);
     }
     const textEl = $(this.newMsgRef.current);
     const text = textEl.val();
@@ -70,27 +73,31 @@ class PublicMessageForm extends MessageForm {
     await this.sendNostr(msg);
     this.props.onSubmit && this.props.onSubmit(msg);
     this.setState({ attachments: null, torrentId: null });
-    textEl.val('');
-    textEl.height('');
+    textEl.val("");
+    textEl.height("");
     this.saveDraftToHistory();
   }
 
   onEmojiButtonClick(event) {
     event.preventDefault();
     event.stopPropagation();
-    this.picker.pickerVisible ? this.picker.hidePicker() : this.picker.showPicker(event.target);
+    this.picker.pickerVisible
+      ? this.picker.hidePicker()
+      : this.picker.showPicker(event.target);
   }
 
   setTextareaHeight(textarea) {
-    textarea.style.height = '';
+    textarea.style.height = "";
     textarea.style.height = `${textarea.scrollHeight}px`;
   }
 
   onMsgTextPaste(event) {
-    const pasted = (event.clipboardData || window.clipboardData).getData('text');
+    const pasted = (event.clipboardData || window.clipboardData).getData(
+      "text"
+    );
     const magnetRegex = /(magnet:\?xt=urn:btih:.*)/gi;
     const match = magnetRegex.exec(pasted);
-    console.log('magnet match', match);
+    console.log("magnet match", match);
     if (match) {
       this.setState({ torrentId: match[0] });
     }
@@ -103,7 +110,7 @@ class PublicMessageForm extends MessageForm {
   }
 
   onKeyDown(e) {
-    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+    if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
       this.submit();
     }
   }
@@ -114,14 +121,18 @@ class PublicMessageForm extends MessageForm {
     const newHistoryState = {
       ...currentHistoryState,
     };
-    newHistoryState['replyTo' + this.props.replyingTo] = text;
-    window.history.replaceState(newHistoryState, '');
+    newHistoryState["replyTo" + this.props.replyingTo] = text;
+    window.history.replaceState(newHistoryState, "");
   }
 
   onMsgTextInput(event) {
     this.setTextareaHeight(event.target);
     if (!this.props.replyingTo) {
-      localState.get('channels').get('public').get('msgDraft').put($(event.target).val());
+      localState
+        .get("channels")
+        .get("public")
+        .get("msgDraft")
+        .put($(event.target).val());
     }
     this.checkMention(event);
     this.saveDraftToHistory();
@@ -130,7 +141,7 @@ class PublicMessageForm extends MessageForm {
   attachFileClicked(event) {
     event.stopPropagation();
     event.preventDefault();
-    $(this.base).find('.attachment-input').click();
+    $(this.base).find(".attachment-input").click();
   }
 
   attachmentsChanged(event) {
@@ -138,7 +149,7 @@ class PublicMessageForm extends MessageForm {
     if (files) {
       for (let i = 0; i < files.length; i++) {
         let formData = new FormData();
-        formData.append('fileToUpload', files[i]);
+        formData.append("fileToUpload", files[i]);
 
         const a = this.state.attachments || [];
         a[i] = a[i] || {
@@ -150,28 +161,28 @@ class PublicMessageForm extends MessageForm {
           this.setState({ attachments: a });
         });
 
-        fetch('https://nostr.build/api/upload/iris.php', {
-          method: 'POST',
+        fetch("https://nostr.build/api/upload/iris.php", {
+          method: "POST",
           body: formData,
         })
           .then(async (response) => {
             const url = await response.json();
-            console.log('upload response', url);
+            console.log("upload response", url);
             if (url) {
               a[i].url = url;
               this.setState({ attachments: a });
               const textEl = $(this.newMsgRef.current);
               const currentVal = textEl.val();
               if (currentVal) {
-                textEl.val(currentVal + '\n\n' + url);
+                textEl.val(currentVal + "\n\n" + url);
               } else {
                 textEl.val(url);
               }
             }
           })
           .catch((error) => {
-            console.error('upload error', error);
-            a[i].error = 'upload failed';
+            console.error("upload error", error);
+            a[i].error = "upload failed";
             this.setState({ attachments: a });
           });
       }
@@ -181,13 +192,13 @@ class PublicMessageForm extends MessageForm {
   }
 
   onSelectMention(item) {
-    const textarea = $(this.base).find('textarea').get(0);
+    const textarea = $(this.base).find("textarea").get(0);
     const pos = textarea.selectionStart;
     const join = [
-      textarea.value.slice(0, pos).replace(mentionRegex, 'nostr:'),
+      textarea.value.slice(0, pos).replace(mentionRegex, "nostr:"),
       item.key,
       textarea.value.slice(pos),
-    ].join('');
+    ].join("");
     textarea.value = `${join} `;
     textarea.focus();
     textarea.selectionStart = textarea.selectionEnd = pos + item.key.length;
@@ -196,10 +207,12 @@ class PublicMessageForm extends MessageForm {
   render() {
     const textareaPlaceholder =
       this.props.placeholder ||
-      (this.props.index === 'media' ? 'type_a_message_or_paste_a_magnet_link' : 'type_a_message');
+      (this.props.index === "media"
+        ? "type_a_message_or_paste_a_magnet_link"
+        : "type_a_message");
     return html`<form
       autocomplete="off"
-      class="message-form ${this.props.class || ''} public"
+      class="message-form ${this.props.class || ""} public"
       onSubmit=${(e) => this.onMsgFormSubmit(e)}
     >
       <input
@@ -242,9 +255,9 @@ class PublicMessageForm extends MessageForm {
               onSelect=${(item) => this.onSelectMention(item)}
             />
           `
-        : ''}
+        : ""}
       ${this.props.waitForFocus && !this.state.focused
-        ? ''
+        ? ""
         : html`
             <div>
               <button
@@ -262,7 +275,7 @@ class PublicMessageForm extends MessageForm {
                 ${Icons.smile}
               </button>
               <button type="submit">
-                <span>${t('post')} </span>
+                <span>${t("post")} </span>
                 <${PaperAirplaneIcon} width="24" style="margin-top:5px" />
               </button>
             </div>
@@ -270,8 +283,10 @@ class PublicMessageForm extends MessageForm {
 
       <div class="attachment-preview">
         ${this.state.torrentId
-          ? html` <${Torrent} preview=${true} torrentId=${this.state.torrentId} /> `
-          : ''}
+          ? html`
+              <${Torrent} preview=${true} torrentId=${this.state.torrentId} />
+            `
+          : ""}
         ${this.state.attachments && this.state.attachments.length
           ? html`
               <p>
@@ -281,19 +296,19 @@ class PublicMessageForm extends MessageForm {
                     e.preventDefault();
                     this.setState({ attachments: null });
                   }}
-                  >${t('remove_attachment')}</a
+                  >${t("remove_attachment")}</a
                 >
               </p>
             `
-          : ''}
+          : ""}
         ${this.state.attachments &&
         this.state.attachments.map((a) => {
           const status = html` ${a.error
             ? html`<span class="error">${a.error}</span>`
-            : a.url || 'uploading...'}`;
+            : a.url || "uploading..."}`;
 
           // if a.url matches audio regex
-          if (a.type?.startsWith('audio')) {
+          if (a.type?.startsWith("audio")) {
             return html`
               ${status}
               <audio controls>
@@ -302,7 +317,7 @@ class PublicMessageForm extends MessageForm {
             `;
           }
           // if a.url matches video regex
-          if (a.type?.startsWith('video')) {
+          if (a.type?.startsWith("video")) {
             return html`
               ${status}
               <video controls loop=${true} autoplay=${true} muted=${true}>
@@ -312,11 +327,11 @@ class PublicMessageForm extends MessageForm {
           }
 
           // image regex
-          if (a.type?.startsWith('image')) {
+          if (a.type?.startsWith("image")) {
             return html`${status} <${SafeImg} src=${a.data} /> `;
           }
 
-          return 'unknown attachment type';
+          return "unknown attachment type";
         })}
       </div>
     </form>`;

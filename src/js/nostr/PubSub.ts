@@ -1,14 +1,13 @@
-import { throttle } from 'lodash';
-import { RelayPool } from 'nostr-relaypool';
-
-import { Event, Filter, matchFilter } from 'nostr-tools';
-import { nip42 } from 'nostr-tools';
+import { throttle } from "lodash";
+import { RelayPool } from "nostr-relaypool";
+import { Event, Filter, matchFilter } from "nostr-tools";
+import { nip42 } from "nostr-tools";
 const { authenticate } = nip42;
-import localState from '../LocalState';
-import Events from '../nostr/Events';
+import localState from "../LocalState";
+import Events from "../nostr/Events";
 
-import IndexedDB from './IndexedDB';
-import Relays from './Relays';
+import IndexedDB from "./IndexedDB";
+import Relays from "./Relays";
 
 type Subscription = {
   filter: Filter;
@@ -30,20 +29,20 @@ const relayPool = new RelayPool(Relays.enabledRelays(), {
     return (
       (Events.seen.has(id) && {
         // make externalGetEventById take booleans instead of events?
-        sig: '',
-        id: '',
+        sig: "",
+        id: "",
         kind: 0,
         tags: [],
-        content: '',
+        content: "",
         created_at: 0,
-        pubkey: '',
+        pubkey: "",
       }) ||
       undefined
     );
   },
 });
 relayPool.onnotice((relayUrl, notice) => {
-  console.log('notice', notice, ' from relay ', relayUrl);
+  console.log("notice", notice, " from relay ", relayUrl);
 });
 const compareUrls = (a, b) => {
   // A bit more lenient url comparison.
@@ -59,21 +58,21 @@ relayPool.onauth(async (relay, challenge) => {
   try {
     await authenticate({ relay, challenge, sign: Events.sign });
   } catch (e) {
-    console.log('error: authenticate to relay:', e);
+    console.log("error: authenticate to relay:", e);
     relayPool.removeRelay(relay.url);
     Relays.disable(relay.url);
   }
 });
 
-localState.get('dev').on((d) => {
+localState.get("dev").on((d) => {
   dev = d;
   relayPool.logSubscriptions = dev.logSubscriptions;
 });
 
 let lastOpened = 0;
-localState.get('lastOpened').once((lo) => {
+localState.get("lastOpened").once((lo) => {
   lastOpened = lo;
-  localState.get('lastOpened').put(Math.floor(Date.now() / 1000));
+  localState.get("lastOpened").put(Math.floor(Date.now() / 1000));
 });
 
 let lastResubscribed = Date.now();
@@ -86,14 +85,14 @@ const reconnect = () => {
   }
 };
 
-document.addEventListener('visibilitychange', () => {
+document.addEventListener("visibilitychange", () => {
   // when iris returns to foreground after 1 min dormancy, resubscribe stuff
   // there might be some better way to manage resubscriptions?
-  if (document.visibilityState === 'visible') {
+  if (document.visibilityState === "visible") {
     reconnect();
   }
 });
-document.addEventListener('online', () => {
+document.addEventListener("online", () => {
   reconnect();
 });
 
@@ -123,7 +122,7 @@ const PubSub = {
     filter: Filter,
     callback?: (event: Event) => void,
     sinceLastOpened = false,
-    mergeSubscriptions = true,
+    mergeSubscriptions = true
   ): Unsubscribe {
     let currentSubscriptionId;
     if (callback) {
@@ -135,12 +134,12 @@ const PubSub = {
     }
 
     this.log(
-      'subscriptions',
+      "subscriptions",
       this.subscriptions.size,
-      'subscribedEventIds',
+      "subscribedEventIds",
       this.subscribedEventIds.size,
-      'subscribedAuthors',
-      this.subscribedAuthors.size,
+      "subscribedAuthors",
+      this.subscribedAuthors.size
     );
 
     if (filter.authors) {
@@ -170,7 +169,11 @@ const PubSub = {
 
     // TODO if asking event by id or profile, ask http proxy
 
-    const unsubRelays = this.subscribeRelayPool(filter, sinceLastOpened, mergeSubscriptions);
+    const unsubRelays = this.subscribeRelayPool(
+      filter,
+      sinceLastOpened,
+      mergeSubscriptions
+    );
 
     return () => {
       unsubRelays?.();
@@ -197,7 +200,11 @@ const PubSub = {
     }
   },
 
-  subscribeRelayPool(filter: Filter, sinceLastOpened: boolean, mergeSubscriptions: boolean) {
+  subscribeRelayPool(
+    filter: Filter,
+    sinceLastOpened: boolean,
+    mergeSubscriptions: boolean
+  ) {
     let relays: any;
     if (filter.keywords) {
       // TODO bomb all relays with searches, or add more search relays
@@ -205,8 +212,11 @@ const PubSub = {
     } else if (mergeSubscriptions || filter.authors?.length !== 1) {
       relays = Relays.enabledRelays();
     }
-    if (dev.indexed03 !== false && filter.kinds?.every((k) => k === 0 || k === 3)) {
-      relays = ['wss://us.rbr.bio', 'wss://eu.rbr.bio'];
+    if (
+      dev.indexed03 !== false &&
+      filter.kinds?.every((k) => k === 0 || k === 3)
+    ) {
+      relays = ["wss://us.rbr.bio", "wss://eu.rbr.bio"];
     }
     if (sinceLastOpened) {
       filter.since = lastOpened;
@@ -231,7 +241,7 @@ const PubSub = {
       {
         // enabled relays
         defaultRelays,
-      },
+      }
     );
   },
 };

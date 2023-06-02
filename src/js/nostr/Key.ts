@@ -1,11 +1,17 @@
-import * as bech32 from 'bech32-buffer'; /* eslint-disable-line @typescript-eslint/no-var-requires */
-import { route } from 'preact-router';
+import * as bech32 from "bech32-buffer"; /* eslint-disable-line @typescript-eslint/no-var-requires */
+import {
+  Event,
+  generatePrivateKey,
+  getPublicKey,
+  nip04,
+  signEvent,
+} from "nostr-tools";
+import { route } from "preact-router";
 
-import Helpers from '../Helpers';
-import { Event, generatePrivateKey, getPublicKey, nip04, signEvent } from 'nostr-tools';
-import localState from '../LocalState';
+import Helpers from "../Helpers";
+import localState from "../LocalState";
 
-import Events from './Events';
+import Events from "./Events";
 
 declare global {
   interface Window {
@@ -28,18 +34,18 @@ export default {
   login(key: any, redirect = false) {
     const shouldRefresh = !!this.key;
     this.key = key;
-    localStorage.setItem('iris.myKey', JSON.stringify(key));
+    localStorage.setItem("iris.myKey", JSON.stringify(key));
     if (shouldRefresh) {
       location.reload();
     }
-    localState.get('loggedIn').put(true);
-    localState.get('lastOpenedFeed').put('following');
+    localState.get("loggedIn").put(true);
+    localState.get("lastOpenedFeed").put("following");
     if (redirect) {
       setTimeout(() => {
-        route('/following');
+        route("/following");
       });
     }
-    localState.get('showLoginModal').put(false);
+    localState.get("showLoginModal").put(false);
   },
   generateKey(): Key {
     const priv = generatePrivateKey();
@@ -49,22 +55,22 @@ export default {
     };
   },
   getOrCreate(options) {
-    let localStorageKey = localStorage.getItem('iris.myKey');
+    let localStorageKey = localStorage.getItem("iris.myKey");
     if (!localStorageKey) {
-      localStorageKey = localStorage.getItem('chatKeyPair'); // maybe we can already remove this...
+      localStorageKey = localStorage.getItem("chatKeyPair"); // maybe we can already remove this...
     }
     if (localStorageKey) {
       this.key = JSON.parse(localStorageKey);
       if (this.key.secp256k1) {
         this.key = this.key.secp256k1;
-        localStorage.setItem('iris.myKey', JSON.stringify(this.key));
+        localStorage.setItem("iris.myKey", JSON.stringify(this.key));
       }
-      console.log('loaded key from localStorage', this.key);
-      localState.get('loggedIn').put(true);
+      console.log("loaded key from localStorage", this.key);
+      localState.get("loggedIn").put(true);
       return true;
     } else if (options.autologin !== false) {
       this.key = this.generateKey();
-      localState.get('loggedIn').put(true);
+      localState.get("loggedIn").put(true);
       return true;
     } else {
       return false;
@@ -83,10 +89,15 @@ export default {
       return nip04.encrypt(k.priv, pub, data);
     } else if (window.nostr) {
       return new Promise((resolve) => {
-        this.processWindowNostr({ op: 'encrypt', data, pub, callback: resolve });
+        this.processWindowNostr({
+          op: "encrypt",
+          data,
+          pub,
+          callback: resolve,
+        });
       });
     } else {
-      return Promise.reject('no private key');
+      return Promise.reject("no private key");
     }
   },
   decrypt: async function (data, pub?: string): Promise<string> {
@@ -96,10 +107,15 @@ export default {
       return nip04.decrypt(k.priv, pub, data);
     } else if (window.nostr) {
       return new Promise((resolve) => {
-        this.processWindowNostr({ op: 'decrypt', data, pub, callback: resolve });
+        this.processWindowNostr({
+          op: "decrypt",
+          data,
+          pub,
+          callback: resolve,
+        });
       });
     } else {
-      return Promise.reject('no private key');
+      return Promise.reject("no private key");
     }
   },
   sign: async function (event: Event): Promise<string> {
@@ -108,10 +124,10 @@ export default {
       return signEvent(event, priv);
     } else if (window.nostr) {
       return new Promise((resolve) => {
-        this.processWindowNostr({ op: 'sign', data: event, callback: resolve });
+        this.processWindowNostr({ op: "sign", data: event, callback: resolve });
       });
     } else {
-      return Promise.reject('no private key');
+      return Promise.reject("no private key");
     }
   },
   processWindowNostr(item: any) {
@@ -129,13 +145,13 @@ export default {
     const { op, data, pub, callback } = this.windowNostrQueue[0];
 
     let fn = Promise.resolve();
-    if (op === 'decrypt') {
+    if (op === "decrypt") {
       fn = this.handlePromise(window.nostr.nip04.decrypt(pub, data), callback);
-    } else if (op === 'encrypt') {
+    } else if (op === "encrypt") {
       fn = this.handlePromise(window.nostr.nip04.encrypt(pub, data), callback);
-    } else if (op === 'sign') {
+    } else if (op === "sign") {
       fn = this.handlePromise(window.nostr.signEvent(data), (signed) =>
-        callback(signed && signed.sig),
+        callback(signed && signed.sig)
       );
     }
     await fn;
@@ -160,9 +176,11 @@ export default {
     }
     try {
       const myPub = this.getPubKey();
-      const msg = Events.db.by('id', id);
+      const msg = Events.db.by("id", id);
       const theirPub =
-        msg.pubkey === myPub ? msg.tags?.find((tag: any) => tag[0] === 'p')[1] : msg.pubkey;
+        msg.pubkey === myPub
+          ? msg.tags?.find((tag: any) => tag[0] === "p")[1]
+          : msg.pubkey;
       if (!(msg && theirPub)) {
         return;
       }
@@ -179,7 +197,7 @@ export default {
   },
   async getPubKeyByNip05Address(address: string): Promise<string | null> {
     try {
-      const [localPart, domain] = address.split('@');
+      const [localPart, domain] = address.split("@");
       const url = `https://${domain}/.well-known/nostr.json?name=${localPart}`;
       const response = await fetch(url);
       const json = await response.json();
@@ -192,12 +210,14 @@ export default {
   },
   async verifyNip05Address(address: string, pubkey: string): Promise<boolean> {
     try {
-      const [username, domain] = address.split('@');
+      const [username, domain] = address.split("@");
       const url = `https://${domain}/.well-known/nostr.json?name=${username}`;
       const response = await fetch(url);
       const json = await response.json();
       const names = json.names;
-      return names[username] === pubkey || names[username.toLowerCase()] === pubkey;
+      return (
+        names[username] === pubkey || names[username.toLowerCase()] === pubkey
+      );
     } catch (error) {
       // gives lots of cors errors:
       // console.error(error);
@@ -209,7 +229,7 @@ export default {
       return;
     }
     if (!prefix) {
-      throw new Error('prefix is required');
+      throw new Error("prefix is required");
     }
     try {
       const decoded = bech32.decode(address);
@@ -222,7 +242,7 @@ export default {
     }
 
     if (address.match(/^[0-9a-fA-F]{64}$/)) {
-      const words = Buffer.from(address, 'hex');
+      const words = Buffer.from(address, "hex");
       return bech32.encode(prefix, words);
     }
     return null;

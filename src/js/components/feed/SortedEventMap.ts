@@ -1,5 +1,5 @@
-import { Event } from '../nostr-tools';
-import Events from '../../nostr/Events';
+import Events from "../../nostr/Events";
+import { Event } from "../nostr-tools";
 
 export default class SortedEventMap {
   private eventMap: Map<string, Event>; // or should we store just strings, getting Events from loki?
@@ -20,17 +20,17 @@ export default class SortedEventMap {
     if (!a || !b) return 0;
     if (a && !b) return -1;
     if (!a && b) return 1;
-    if (this.sortBy === 'created_at') {
+    if (this.sortBy === "created_at") {
       aVal = a.created_at;
       bVal = b.created_at;
-    } else if (this.sortBy === 'likes') {
+    } else if (this.sortBy === "likes") {
       aVal = Events.likesByMessageId.get(a.id)?.size || 0;
       bVal = Events.likesByMessageId.get(b.id)?.size || 0;
-    } else if (this.sortBy === 'zaps') {
+    } else if (this.sortBy === "zaps") {
       aVal = Events.zapsByNote.get(a.id)?.size || 0;
       bVal = Events.zapsByNote.get(b.id)?.size || 0;
     }
-    if (this.sortDirection === 'desc') {
+    if (this.sortDirection === "desc") {
       return bVal - aVal;
     } else {
       return aVal - bVal;
@@ -43,7 +43,7 @@ export default class SortedEventMap {
 
   add(event: Event): boolean {
     if (!event || !event.id || !event.created_at) {
-      throw new Error('Invalid event');
+      throw new Error("Invalid event");
     }
     if (this.eventMap.has(event.id)) {
       return false;

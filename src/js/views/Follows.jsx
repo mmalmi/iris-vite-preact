@@ -1,22 +1,22 @@
-import throttle from 'lodash/throttle';
-import ScrollViewport from 'preact-scroll-viewport';
+import throttle from "lodash/throttle";
+import ScrollViewport from "preact-scroll-viewport";
 
-import { PrimaryButton as Button } from '../components/buttons/Button';
-import Follow from '../components/buttons/Follow';
-import Identicon from '../components/Identicon';
-import Name from '../components/Name';
-import localState from '../LocalState';
-import Key from '../nostr/Key';
-import SocialNetwork from '../nostr/SocialNetwork';
-import { translate as t } from '../translations/Translation';
+import { PrimaryButton as Button } from "../components/buttons/Button";
+import Follow from "../components/buttons/Follow";
+import Identicon from "../components/Identicon";
+import Name from "../components/Name";
+import localState from "../LocalState";
+import Key from "../nostr/Key";
+import SocialNetwork from "../nostr/SocialNetwork";
+import { translate as t } from "../translations/Translation";
 
-import View from './View';
+import View from "./View";
 
 class Follows extends View {
   constructor() {
     super();
     this.follows = [];
-    this.id = 'follows-view';
+    this.id = "follows-view";
     this.state = { follows: [], contacts: {} };
   }
 
@@ -53,19 +53,24 @@ class Follows extends View {
   updateSortedFollows = throttle(
     () => {
       const comparator = (a, b) =>
-        this.props.followers ? this.sortByFollowDistance(a, b) : this.sortByName(a, b);
+        this.props.followers
+          ? this.sortByFollowDistance(a, b)
+          : this.sortByName(a, b);
       const follows = Array.from(this.follows).sort(comparator);
       this.setState({ follows });
     },
     1000,
-    { leading: true },
+    { leading: true }
   );
 
   getFollows() {
-    SocialNetwork.getFollowedByUser(Key.toNostrHexAddress(this.props.id), (follows) => {
-      this.follows = follows; // TODO buggy?
-      this.updateSortedFollows();
-    });
+    SocialNetwork.getFollowedByUser(
+      Key.toNostrHexAddress(this.props.id),
+      (follows) => {
+        this.follows = follows; // TODO buggy?
+        this.updateSortedFollows();
+      }
+    );
   }
 
   shouldComponentUpdate() {
@@ -73,28 +78,31 @@ class Follows extends View {
   }
 
   getFollowers() {
-    SocialNetwork.getFollowersByUser(Key.toNostrHexAddress(this.props.id), (followers) => {
-      this.follows = followers;
-      this.updateSortedFollows();
-    });
+    SocialNetwork.getFollowersByUser(
+      Key.toNostrHexAddress(this.props.id),
+      (followers) => {
+        this.follows = followers;
+        this.updateSortedFollows();
+      }
+    );
   }
 
   componentDidMount() {
     if (this.props.id) {
-      this.myPub = Key.toNostrBech32Address(Key.getPubKey(), 'npub');
+      this.myPub = Key.toNostrBech32Address(Key.getPubKey(), "npub");
       this.props.followers ? this.getFollowers() : this.getFollows();
-      localState.get('contacts').on(this.inject());
+      localState.get("contacts").on(this.inject());
     }
   }
 
   followAll() {
-    confirm(`${t('follow_all')} (${this.state.follows.length})?`) &&
+    confirm(`${t("follow_all")} (${this.state.follows.length})?`) &&
       SocialNetwork.setFollowed(this.state.follows);
   }
 
   renderFollows() {
     return this.state.follows.map((hexKey) => {
-      const npub = Key.toNostrBech32Address(hexKey, 'npub');
+      const npub = Key.toNostrBech32Address(hexKey, "npub");
       return (
         <div key={npub} className="profile-link-container">
           <a href={`/${npub}`} className="profile-link">
@@ -117,35 +125,36 @@ class Follows extends View {
 
   renderView() {
     const showFollowAll =
-      this.state.follows.length > 1 && !(this.props.id === this.myPub && !this.props.followers);
+      this.state.follows.length > 1 &&
+      !(this.props.id === this.myPub && !this.props.followers);
     return (
       <div className="centered-container">
-        <h3 style={{ display: 'flex' }}>
+        <h3 style={{ display: "flex" }}>
           <a href={`/${this.props.id}`}>
             <Name pub={this.props.id} />
           </a>
           :<i> </i>
           <span style={{ flex: 1 }} className="mar-left5">
-            {this.props.followers ? t('followers') : t('following')}
+            {this.props.followers ? t("followers") : t("following")}
           </span>
           {showFollowAll ? (
             <span style="text-align: right" className="hidden-xs">
               <Button small={true} onClick={() => this.followAll()}>
-                {t('follow_all')} ({this.state.follows.length})
+                {t("follow_all")} ({this.state.follows.length})
               </Button>
             </span>
           ) : (
-            ''
+            ""
           )}
         </h3>
         {showFollowAll ? (
           <p style="text-align: right" className="visible-xs-block">
             <Button small={true} onClick={() => this.followAll()}>
-              {t('follow_all')} ({this.state.follows.length})
+              {t("follow_all")} ({this.state.follows.length})
             </Button>
           </p>
         ) : (
-          ''
+          ""
         )}
         <div id="follows-list">
           {this.state.follows.length > 300 ? (
@@ -153,7 +162,7 @@ class Follows extends View {
           ) : (
             this.renderFollows()
           )}
-          {this.state.follows.length === 0 ? '—' : ''}
+          {this.state.follows.length === 0 ? "—" : ""}
         </div>
       </div>
     );

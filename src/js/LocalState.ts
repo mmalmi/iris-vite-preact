@@ -1,15 +1,20 @@
-import localForage from 'localforage';
-import _ from 'lodash';
+import localForage from "localforage";
+import _ from "lodash";
 
 type EventListener = {
   off: () => void;
 };
 
-type Callback = (data: any, path: string, something: any, event: EventListener) => void;
+type Callback = (
+  data: any,
+  path: string,
+  something: any,
+  event: EventListener
+) => void;
 
 // Localforage returns null if an item is not found, so we represent null with this uuid instead.
 // not foolproof, but good enough for now.
-const LOCALFORAGE_NULL = 'c2fc1ad0-f76f-11ec-b939-0242ac120002';
+const LOCALFORAGE_NULL = "c2fc1ad0-f76f-11ec-b939-0242ac120002";
 const notInLocalForage = new Set();
 
 localForage.config({
@@ -30,7 +35,7 @@ class Node {
   loaded = false;
 
   /** */
-  constructor(id = '', parent: Node | null = null) {
+  constructor(id = "", parent: Node | null = null) {
     this.id = id;
     this.parent = parent;
   }
@@ -45,7 +50,10 @@ class Node {
     } else if (this.value === undefined) {
       localForage.removeItem(this.id);
     } else {
-      localForage.setItem(this.id, this.value === null ? LOCALFORAGE_NULL : this.value);
+      localForage.setItem(
+        this.id,
+        this.value === null ? LOCALFORAGE_NULL : this.value
+      );
     }
   }, 500);
 
@@ -67,7 +75,7 @@ class Node {
       await Promise.all(
         result.map(async (key) => {
           newResult[key] = await this.get(key).once();
-        }),
+        })
       );
       result = newResult;
     } else {
@@ -122,7 +130,7 @@ class Node {
     if (Array.isArray(value)) {
       throw new Error("Sorry, we don't deal with arrays");
     }
-    if (typeof value === 'object' && value !== null) {
+    if (typeof value === "object" && value !== null) {
       this.value = undefined;
       for (const key in value) {
         this.get(key).put(value[key]);
@@ -144,7 +152,11 @@ class Node {
    * @param returnIfUndefined
    * @returns {Promise<*>}
    */
-  async once(callback?: Callback, event?: EventListener, returnIfUndefined = true): Promise<any> {
+  async once(
+    callback?: Callback,
+    event?: EventListener,
+    returnIfUndefined = true
+  ): Promise<any> {
     let result: any;
     if (this.children.size) {
       // return an object containing all children
@@ -152,7 +164,7 @@ class Node {
       await Promise.all(
         Array.from(this.children.keys()).map(async (key) => {
           result[key] = await this.get(key).once(undefined, event);
-        }),
+        })
       );
     } else if (this.value !== undefined) {
       result = this.value;
@@ -160,7 +172,13 @@ class Node {
       result = await this.loadLocalForage();
     }
     if (result !== undefined || returnIfUndefined) {
-      callback && callback(result, this.id.slice(this.id.lastIndexOf('/') + 1), null, event);
+      callback &&
+        callback(
+          result,
+          this.id.slice(this.id.lastIndexOf("/") + 1),
+          null,
+          event
+        );
       return result;
     }
   }
