@@ -241,9 +241,15 @@ export default {
       // not a bech32 address
     }
 
-    if (address.match(/^[0-9a-fA-F]{64}$/)) {
-      const words = Buffer.from(address, "hex");
-      return bech32.encode(prefix, words);
+    const matchResult = address.match(/^[0-9a-fA-F]{64}$/);
+    if (matchResult !== null) {
+      const wordsArray = matchResult[0].match(/.{1,2}/g);
+      if (wordsArray !== null) {
+        const words = new Uint8Array(
+          wordsArray.map((byte) => parseInt(byte, 16))
+        );
+        return bech32.encode(prefix, words);
+      }
     }
     return null;
   },
