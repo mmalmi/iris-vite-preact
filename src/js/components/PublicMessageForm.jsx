@@ -5,7 +5,7 @@ import { createRef } from "preact";
 
 import Helpers from "../Helpers";
 import Icons from "../Icons";
-import * as EmojiButton from "../lib/emoji-button";
+
 import localState from "../LocalState";
 import { translate as t } from "../translations/Translation";
 
@@ -21,11 +21,6 @@ class PublicMessageForm extends MessageForm {
 
   componentDidMount() {
     const textEl = $(this.newMsgRef.current);
-    this.picker = new EmojiButton({ position: "top-start" });
-    this.picker.on("emoji", (emoji) => {
-      textEl.val(textEl.val() + emoji);
-      textEl.focus();
-    });
     if (
       (!Helpers.isMobile || this.props.forceAutofocusMobile == true) &&
       this.props.autofocus !== false
@@ -76,14 +71,6 @@ class PublicMessageForm extends MessageForm {
     textEl.val("");
     textEl.height("");
     this.saveDraftToHistory();
-  }
-
-  onEmojiButtonClick(event) {
-    event.preventDefault();
-    event.stopPropagation();
-    this.picker.pickerVisible
-      ? this.picker.hidePicker()
-      : this.picker.showPicker(event.target);
   }
 
   setTextareaHeight(textarea) {
@@ -266,13 +253,6 @@ class PublicMessageForm extends MessageForm {
                 onClick=${(e) => this.attachFileClicked(e)}
               >
                 ${Icons.attach}
-              </button>
-              <button
-                class="emoji-picker-btn hidden-xs"
-                type="button"
-                onClick=${(e) => this.onEmojiButtonClick(e)}
-              >
-                ${Icons.smile}
               </button>
               <button type="submit">
                 <span>${t("post")} </span>

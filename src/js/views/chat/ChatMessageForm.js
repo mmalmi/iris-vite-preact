@@ -5,7 +5,6 @@ import $ from "jquery";
 
 import MessageForm from "../../components/MessageForm.jsx";
 import Helpers from "../../Helpers";
-import * as EmojiButton from "../../lib/emoji-button";
 import localState from "../../LocalState";
 import Events from "../../nostr/Events";
 import Key from "../../nostr/Key";
@@ -13,12 +12,6 @@ import { translate as t } from "../../translations/Translation";
 
 class ChatMessageForm extends MessageForm {
   componentDidMount() {
-    this.picker = new EmojiButton({ position: "top-start" });
-    this.picker.on("emoji", (emoji) => {
-      const textEl = $(this.base).find(".new-msg");
-      textEl.val(textEl.val() + emoji);
-      textEl.focus();
-    });
     if (!Helpers.isMobile && this.props.autofocus !== false) {
       $(this.base).find(".new-msg").focus();
     }
@@ -65,13 +58,6 @@ class ChatMessageForm extends MessageForm {
     Helpers.scrollToMessageListBottom();
   }
 
-  onEmojiButtonClick(event) {
-    event.preventDefault();
-    this.picker.pickerVisible
-      ? this.picker.hidePicker()
-      : this.picker.showPicker(event.target);
-  }
-
   onMsgTextInput(event) {
     localState
       .get("channels")
@@ -87,20 +73,11 @@ class ChatMessageForm extends MessageForm {
   }
 
   render() {
-    const contentBtns = html` <button
-      class="emoji-picker-btn hidden-xs"
-      type="button"
-      onClick=${(e) => this.onEmojiButtonClick(e)}
-    >
-      <${FaceSmileIcon} width="28" />
-    </button>`;
-
     return html`<form
       autocomplete="off"
       class="message-form ${this.props.class || ""}"
       onSubmit=${(e) => this.onSubmit(e)}
     >
-      ${contentBtns}
       <input
         name="attachment-input"
         type="file"
