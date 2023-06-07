@@ -1,7 +1,7 @@
 import Icons from "../Icons";
 import Key from "../nostr/Key";
 import SocialNetwork from "../nostr/SocialNetwork";
-import { translate as t } from "../translations/Translation";
+import { translate as t } from "../translations/Translation.mjs";
 
 export default function Badge(props) {
   const myPub = Key.getPubKey();

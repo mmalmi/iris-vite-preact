@@ -1,12 +1,15 @@
+import { ChangeEvent } from "react";
+
 import Component from "../../BaseComponent";
 import Name from "../../components/Name";
 import localState from "../../LocalState";
 import Events from "../../nostr/Events";
 import Key from "../../nostr/Key";
 import SocialNetwork from "../../nostr/SocialNetwork";
-import { translate as t } from "../../translations/Translation";
+import { translate as t } from "../../translations/Translation.mjs";
 
 export default class SocialNetworkSettings extends Component {
+  private refreshInterval: number | undefined;
   constructor() {
     super();
     this.state = {
@@ -16,7 +19,7 @@ export default class SocialNetworkSettings extends Component {
   }
   render() {
     let hasBlockedUsers = false;
-    let blockedUsers = Array.from(this.state.blockedUsers).map((user) => {
+    const blockedUsers = Array.from(this.state.blockedUsers).map((user) => {
       const bech32 = Key.toNostrBech32Address(user, "npub");
       if (bech32) {
         hasBlockedUsers = true;
@@ -74,11 +77,12 @@ export default class SocialNetworkSettings extends Component {
               this.state.globalFilter.minFollowersAtMaxDistance ||
               Events.DEFAULT_GLOBAL_FILTER.minFollowersAtMaxDistance
             }
-            onChange={(e) => {
+            onChange={(e: ChangeEvent<HTMLInputElement>) => {
+              const target = e.target as HTMLInputElement;
               localState
                 .get("globalFilter")
                 .get("minFollowersAtMaxDistance")
-                .put(parseInt(e.target.value));
+                .put(parseInt(target.value));
             }}
           />
           <h3>{t("blocked_users")}</h3>

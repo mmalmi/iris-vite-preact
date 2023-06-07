@@ -8,7 +8,7 @@ import Header from "../components/Header";
 import SafeImg from "../components/SafeImg";
 import Key from "../nostr/Key";
 import SocialNetwork from "../nostr/SocialNetwork";
-import { translate as t } from "../translations/Translation";
+import { translate as t } from "../translations/Translation.mjs";
 
 const explainers = {
   lud16: "Bitcoin lightning address ⚡ (lud16)",

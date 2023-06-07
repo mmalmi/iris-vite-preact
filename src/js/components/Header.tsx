@@ -10,7 +10,7 @@ import Icons from "../Icons";
 import localState from "../LocalState";
 import Key from "../nostr/Key";
 import Relays from "../nostr/Relays";
-import { translate as t } from "../translations/Translation";
+import { translate as t } from "../translations/Translation.mjs";
 
 import { Button, PrimaryButton } from "./buttons/Button";
 import Identicon from "./Identicon";

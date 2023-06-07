@@ -3,7 +3,7 @@ import { ArrowPathIcon } from "@heroicons/react/24/outline";
 
 import Events from "../../nostr/Events";
 import Key from "../../nostr/Key";
-import { translate as t } from "../../translations/Translation";
+import { translate as t } from "../../translations/Translation.mjs";
 import Name from "../Name";
 import { Event } from "../nostr-tools";
 

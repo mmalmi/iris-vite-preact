@@ -2,7 +2,7 @@ import { FC, useEffect, useState } from "react";
 import styled from "styled-components";
 
 import Events from "../../nostr/Events";
-import { translate as t } from "../../translations/Translation";
+import { translate as t } from "../../translations/Translation.mjs";
 import { Event } from "../nostr-tools";
 
 const Wrapper = styled.div`

@@ -1,6 +1,6 @@
 import FeedComponent from "../components/feed/Feed";
 import OnboardingNotification from "../components/OnboardingNotification";
-import { translate as t } from "../translations/Translation";
+import { translate as t } from "../translations/Translation.mjs";
 
 import View from "./View";
 

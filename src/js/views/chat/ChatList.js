@@ -6,7 +6,7 @@ import Component from "../../BaseComponent";
 import Helpers from "../../Helpers";
 import localState from "../../LocalState";
 import Events from "../../nostr/Events";
-import { translate as t } from "../../translations/Translation";
+import { translate as t } from "../../translations/Translation.mjs";
 
 import ChatListItem from "./ChatListItem";
 

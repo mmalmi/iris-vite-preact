@@ -8,7 +8,7 @@ import FuzzySearch from "../FuzzySearch";
 import localState from "../LocalState";
 import Events from "../nostr/Events";
 import Key from "../nostr/Key";
-import { translate as t } from "../translations/Translation";
+import { translate as t } from "../translations/Translation.mjs";
 
 import Identicon from "./Identicon";
 import Name from "./Name";

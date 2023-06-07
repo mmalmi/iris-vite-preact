@@ -17,7 +17,7 @@ import BaseComponent from "../BaseComponent";
 import Icons from "../Icons";
 import localState from "../LocalState";
 import Key from "../nostr/Key";
-import { translate as t } from "../translations/Translation";
+import { translate as t } from "../translations/Translation.mjs";
 
 import { Button, PrimaryButton } from "./buttons/Button";
 import Modal from "./modal/Modal";

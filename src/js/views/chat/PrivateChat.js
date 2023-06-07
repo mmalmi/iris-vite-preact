@@ -11,7 +11,7 @@ import Events from "../../nostr/Events";
 import Key from "../../nostr/Key";
 import PubSub from "../../nostr/PubSub";
 import Session from "../../nostr/Session";
-import { translate as t } from "../../translations/Translation";
+import { translate as t } from "../../translations/Translation.mjs";
 
 import ChatMessageForm from "./ChatMessageForm";
 
@@ -55,7 +55,7 @@ export default class PrivateChat extends Component {
 
   updateLastOpened() {
     const hexId = Key.toNostrHexAddress(this.props.id);
-    Session.public.set(
+    Session.public?.set(
       "chats/" + hexId + "/lastOpened",
       Math.floor(Date.now() / 1000)
     );

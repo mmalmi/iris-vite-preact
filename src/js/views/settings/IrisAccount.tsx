@@ -1,12 +1,12 @@
-import { debounce } from 'lodash';
-import { route } from 'preact-router';
+import { debounce } from "lodash";
+import { route } from "preact-router";
 
-import Component from '../../BaseComponent';
-import { PrimaryButton as Button } from '../../components/buttons/Button';
-import Events from '../../nostr/Events';
-import Key from '../../nostr/Key';
-import SocialNetwork from '../../nostr/SocialNetwork';
+import Component from "../../BaseComponent";
+import { PrimaryButton as Button } from "../../components/buttons/Button";
 import localState from "../../LocalState";
+import Events from "../../nostr/Events";
+import Key from "../../nostr/Key";
+import SocialNetwork from "../../nostr/SocialNetwork";
 
 export default class IrisAccount extends Component {
   state = {
@@ -21,7 +21,7 @@ export default class IrisAccount extends Component {
           Username: <b>{name}</b>
         </p>
         <p>
-          Short link:{' '}
+          Short link:{" "}
           {link ? (
             <a
               href={`https://iris.to/${name}`}
@@ -44,10 +44,10 @@ export default class IrisAccount extends Component {
   }
 
   render() {
-    let view = '';
+    let view = "";
 
     if (this.state.irisToActive) {
-      const username = this.state.profile.nip05.split('@')[0];
+      const username = this.state.profile.nip05.split("@")[0];
       view = this.renderAccountName(username);
     } else if (this.state.existing && this.state.existing.confirmed) {
       view = (
@@ -67,8 +67,8 @@ export default class IrisAccount extends Component {
       view = (
         <div>
           <p className="positive">
-            Username iris.to/<b>{this.state.existing.name}</b> is reserved for you until 12 March
-            2023!
+            Username iris.to/<b>{this.state.existing.name}</b> is reserved for
+            you until 12 March 2023!
           </p>
           {this.renderAccountName(this.state.existing.name, false)}
           <p>
@@ -85,13 +85,17 @@ export default class IrisAccount extends Component {
       window.cf_turnstile_callback = (token) => this.register(token);
       view = (
         <>
-          <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+          <script
+            src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+            async
+            defer
+          ></script>
           <div
             className="cf-turnstile"
             data-sitekey={
-              ['iris.to', 'beta.iris.to'].includes(window.location.hostname)
-                ? '0x4AAAAAAACsEd8XuwpPTFwz'
-                : '3x00000000000000000000FF'
+              ["iris.to", "beta.iris.to"].includes(window.location.hostname)
+                ? "0x4AAAAAAACsEd8XuwpPTFwz"
+                : "3x00000000000000000000FF"
             }
             data-callback="cf_turnstile_callback"
           ></div>
@@ -118,7 +122,9 @@ export default class IrisAccount extends Component {
                   {this.renderAccountName(this.state.newUserName, false)}
                 </>
               ) : (
-                <span className="text-warning">{this.state.invalidUsernameMessage}</span>
+                <span className="text-warning">
+                  {this.state.invalidUsernameMessage}
+                </span>
               )}
             </p>
           </form>
@@ -142,14 +148,18 @@ export default class IrisAccount extends Component {
   async onNewUserNameChange(e) {
     const newUserName = e.target.value;
     if (newUserName.length === 0) {
-      this.setState({ newUserName, newUserNameValid: false, invalidUsernameMessage: '' });
+      this.setState({
+        newUserName,
+        newUserNameValid: false,
+        invalidUsernameMessage: "",
+      });
       return;
     }
     if (newUserName.length < 6 || newUserName.length > 15) {
       this.setState({
         newUserName,
         newUserNameValid: false,
-        invalidUsernameMessage: 'Username must be between 6 and 15 characters',
+        invalidUsernameMessage: "Username must be between 6 and 15 characters",
       });
       return;
     }
@@ -157,19 +167,22 @@ export default class IrisAccount extends Component {
       this.setState({
         newUserName,
         newUserNameValid: false,
-        invalidUsernameMessage: 'Username must only contain lowercase letters and numbers',
+        invalidUsernameMessage:
+          "Username must only contain lowercase letters and numbers",
       });
       return;
     }
     this.setState({
       newUserName,
-      invalidUsernameMessage: '',
+      invalidUsernameMessage: "",
     });
     this.checkAvailabilityFromAPI(newUserName);
   }
 
   checkAvailabilityFromAPI = debounce(async (name) => {
-    const res = await fetch(`https://api.iris.to/user/available?name=${encodeURIComponent(name)}`);
+    const res = await fetch(
+      `https://api.iris.to/user/available?name=${encodeURIComponent(name)}`
+    );
     if (name !== this.state.newUserName) {
       return;
     }
@@ -186,7 +199,7 @@ export default class IrisAccount extends Component {
     } else {
       this.setState({
         newUserNameValid: false,
-        invalidUsernameMessage: 'Error checking username availability',
+        invalidUsernameMessage: "Error checking username availability",
       });
     }
   }, 500);
@@ -200,7 +213,7 @@ export default class IrisAccount extends Component {
   }
 
   async register(cfToken) {
-    console.log('register', cfToken);
+    console.log("register", cfToken);
     const pubkey = Key.getPubKey();
     const event = {
       content: `iris.to/${this.state.newUserName}`,
@@ -212,10 +225,10 @@ export default class IrisAccount extends Component {
     event.id = Events.getEventHash(event);
     event.sig = await Key.sign(event);
     // post signed event as request body to https://api.iris.to/user/confirm_user
-    const res = await fetch('https://api.iris.to/user/signup', {
-      method: 'POST',
+    const res = await fetch("https://api.iris.to/user/signup", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ event, cfToken }),
     });
@@ -232,16 +245,16 @@ export default class IrisAccount extends Component {
       res
         .json()
         .then((json) => {
-          this.setState({ error: json.message || 'error' });
+          this.setState({ error: json.message || "error" });
         })
         .catch(() => {
-          this.setState({ error: 'error' });
+          this.setState({ error: "error" });
         });
     }
   }
 
   setAsPrimary() {
-    const newNip = this.state.existing.name + '@iris.to';
+    const newNip = this.state.existing.name + "@iris.to";
     const timeout = setTimeout(() => {
       SocialNetwork.setMetadata({ nip05: newNip });
     }, 2000);
@@ -269,31 +282,38 @@ export default class IrisAccount extends Component {
     event.id = Events.getEventHash(event);
     event.sig = await Key.sign(event);
     // post signed event as request body to https://api.iris.to/user/confirm_user
-    const res = await fetch('https://api.iris.to/user/confirm_user', {
-      method: 'POST',
+    const res = await fetch("https://api.iris.to/user/confirm_user", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(event),
     });
-    localState.get('showNoIrisToAddress').put(false);
-    localState.get('existingIrisToAddress').put({ confirmed: true, name });
+    localState.get("showNoIrisToAddress").put(false);
+    localState.get("existingIrisToAddress").put({ confirmed: true, name });
     if (res.status === 200) {
-      this.setState({ error: null, existing: { confirmed: true, name: this.state.existing.name } });
+      this.setState({
+        error: null,
+        existing: { confirmed: true, name: this.state.existing.name },
+      });
     } else {
       res
         .json()
         .then((json) => {
-          this.setState({ error: json.message || 'error' });
+          this.setState({ error: json.message || "error" });
         })
         .catch(() => {
-          this.setState({ error: 'error' });
+          this.setState({ error: "error" });
         });
     }
   }
 
   async declineReserved() {
-    if (!confirm(`Are you sure you want to decline iris.to/${this.state.existing.name}?`)) {
+    if (
+      !confirm(
+        `Are you sure you want to decline iris.to/${this.state.existing.name}?`
+      )
+    ) {
       return;
     }
     const pubkey = Key.getPubKey();
@@ -307,10 +327,10 @@ export default class IrisAccount extends Component {
     event.id = Events.getEventHash(event);
     event.sig = await Key.sign(event);
     // post signed event as request body to https://api.iris.to/user/confirm_user
-    const res = await fetch('https://api.iris.to/user/decline_user', {
-      method: 'POST',
+    const res = await fetch("https://api.iris.to/user/decline_user", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(event),
     });
@@ -320,10 +340,10 @@ export default class IrisAccount extends Component {
       res
         .json()
         .then((json) => {
-          this.setState({ error: json.message || 'error' });
+          this.setState({ error: json.message || "error" });
         })
         .catch(() => {
-          this.setState({ error: 'error' });
+          this.setState({ error: "error" });
         });
     }
   }
@@ -334,13 +354,16 @@ export default class IrisAccount extends Component {
       myPub,
       (profile) => {
         const irisToActive =
-          profile && profile.nip05 && profile.nip05valid && profile.nip05.endsWith('@iris.to');
+          profile &&
+          profile.nip05 &&
+          profile.nip05valid &&
+          profile.nip05.endsWith("@iris.to");
         this.setState({ profile, irisToActive });
         if (profile && !irisToActive) {
           this.checkExistingAccount(myPub);
         }
       },
-      true,
+      true
     );
     this.checkExistingAccount(myPub);
   }

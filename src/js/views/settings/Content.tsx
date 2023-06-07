@@ -1,6 +1,6 @@
 import Component from "../../BaseComponent";
 import localState from "../../LocalState";
-import { translate as t } from "../../translations/Translation";
+import { translate as t } from "../../translations/Translation.mjs";
 
 export default class Content extends Component {
   constructor() {

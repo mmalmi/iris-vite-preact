@@ -5,7 +5,7 @@ import Component from "../BaseComponent";
 import Helpers from "../Helpers";
 import Icons from "../Icons";
 import localState from "../LocalState";
-import { translate as t } from "../translations/Translation";
+import { translate as t } from "../translations/Translation.mjs";
 
 const isOfType = (f, types) => types.indexOf(f.name.slice(-4)) !== -1;
 const isVideo = (f) => isOfType(f, ["webm", ".mp4", ".ogg"]);
@@ -187,7 +187,7 @@ class Torrent extends Component {
       return;
     }
     this.torrent = torrent;
-    let interval = setInterval(() => {
+    const interval = setInterval(() => {
       if (!torrent.files) {
         console.log("no files found in torrent:", torrent);
         return;

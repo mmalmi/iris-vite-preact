@@ -5,14 +5,13 @@ import { createRef } from "preact";
 
 import Helpers from "../Helpers";
 import Icons from "../Icons";
-
 import localState from "../LocalState";
-import { translate as t } from "../translations/Translation";
+import { translate as t } from "../translations/Translation.mjs";
 
-import MessageForm from "./MessageForm.jsx";
+import MessageForm from "./MessageForm.tsx";
 import SafeImg from "./SafeImg";
 import SearchBox from "./SearchBox";
-import Torrent from "./Torrent.jsx";
+import Torrent from "./Torrent";
 
 const mentionRegex = /\B@[\u00BF-\u1FFF\u2C00-\uD7FF\w]*$/;
 
@@ -132,10 +131,10 @@ class PublicMessageForm extends MessageForm {
   }
 
   attachmentsChanged(event) {
-    let files = event.target.files || event.dataTransfer.files;
+    const files = event.target.files || event.dataTransfer.files;
     if (files) {
       for (let i = 0; i < files.length; i++) {
-        let formData = new FormData();
+        const formData = new FormData();
         formData.append("fileToUpload", files[i]);
 
         const a = this.state.attachments || [];

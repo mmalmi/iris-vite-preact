@@ -1,15 +1,15 @@
 import Component from "../../BaseComponent";
 
-import Account from "./Account";
+import Account from "./Account.js";
 import Appearance from "./Appearance";
-import Backup from "./Backup.jsx";
-import Content from "./Content.jsx";
-import Dev from "./Dev.jsx";
-import IrisAccount from "./IrisAccount";
+import Backup from "./Backup.tsx";
+import Content from "./Content.tsx";
+import Dev from "./Dev.tsx";
+import IrisAccount from "./IrisAccount.js";
 import Language from "./Language";
-import Network from "./Network";
+import Network from "./Network.js";
 import Payments from "./Payments";
-import SocialNetwork from "./SocialNetwork.jsx";
+import SocialNetwork from "./SocialNetwork";
 
 export default class SettingsContent extends Component {
   content = "";

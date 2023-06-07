@@ -1,21 +1,21 @@
-import * as secp from '@noble/secp256k1';
-import { Component } from 'preact';
+import * as secp from "@noble/secp256k1";
+import * as bech32 from "bech32-buffer";
+import { Component } from "preact";
 
-import logo from '../../assets/img/android-chrome-192x192.png';
-import { PrimaryButton as Button } from '../components/buttons/Button';
-import EULA from '../components/EULA';
-import LanguageSelector from '../components/LanguageSelector';
-import Helpers from '../Helpers';
-import localState from '../LocalState';
-import Events from '../nostr/Events';
-import Key from '../nostr/Key';
-import SocialNetwork from '../nostr/SocialNetwork';
-import { translate as t } from '../translations/Translation';
-import * as bech32 from 'bech32-buffer';
+import logo from "../../assets/img/android-chrome-192x192.png";
+import { PrimaryButton as Button } from "../components/buttons/Button";
+import EULA from "../components/EULA";
+import LanguageSelector from "../components/LanguageSelector";
+import Helpers from "../Helpers";
+import localState from "../LocalState";
+import Events from "../nostr/Events";
+import Key from "../nostr/Key";
+import SocialNetwork from "../nostr/SocialNetwork";
+import { translate as t } from "../translations/Translation";
 
 class Login extends Component {
   componentDidMount() {
-    const el = document.getElementById('login-form-name');
+    const el = document.getElementById("login-form-name");
     el && el.focus();
     // re-render after a while sec to make sure window.nostr is set
     setTimeout(() => this.setState({}), 100);
@@ -52,14 +52,14 @@ class Login extends Component {
           const { data, prefix } = bech32.decode(val);
           const hex = Helpers.arrayToHex(data);
           // logging in with a public key?
-          if (prefix === 'npub') {
+          if (prefix === "npub") {
             k = { rpub: hex };
-          } else if (prefix === 'nsec') {
+          } else if (prefix === "nsec") {
             // logging in with a bech32 private key (nsec)
             k = { priv: hex, rpub: Key.getPublicKey(hex) };
           }
         } catch (e) {
-          this.setState({ privateKeyError: t('invalid_private_key') });
+          this.setState({ privateKeyError: t("invalid_private_key") });
           console.error(e);
         }
       }
@@ -68,8 +68,8 @@ class Login extends Component {
       return;
     }
     await Key.login(k, this.props.fullScreen);
-    event.target.value = '';
-    Helpers.copyToClipboard(''); // clear the clipboard
+    event.target.value = "";
+    Helpers.copyToClipboard(""); // clear the clipboard
   }
 
   showCreateAccount(e) {
@@ -78,15 +78,15 @@ class Login extends Component {
   }
 
   loginAsNewUser() {
-    let display_name = document.getElementById('login-form-name').value;
+    const display_name = document.getElementById("login-form-name").value;
     Key.loginAsNewUser(this.props.fullScreen);
-    localState.get('showFollowSuggestions').put(true);
+    localState.get("showFollowSuggestions").put(true);
     display_name &&
       setTimeout(() => {
         SocialNetwork.setMetadata({ display_name });
       }, 100);
     // follow the developer's nostr key also
-    this.base.style = 'display:none';
+    this.base.style = "display:none";
     const now = Math.floor(Date.now() / 1000);
     Events.notificationsSeenTime = now;
   }
@@ -105,14 +105,14 @@ class Login extends Component {
     if (
       val.indexOf('"priv"') !== -1 ||
       secp.utils.isValidPrivateKey(val) ||
-      val.startsWith('nsec') ||
-      val.startsWith('npub')
+      val.startsWith("nsec") ||
+      val.startsWith("npub")
     ) {
       this.onPasteKey(event);
-      event.target.value = '';
+      event.target.value = "";
       return;
     }
-    this.setState({ inputStyle: val.length ? 'text-align: center' : '' });
+    this.setState({ inputStyle: val.length ? "text-align: center" : "" });
   }
 
   renderExistingAccountLogin() {
@@ -122,17 +122,19 @@ class Login extends Component {
           id="paste-privkey"
           autoFocus
           onInput={(e) => this.onPasteKey(e)}
-          placeholder={t('paste_private_key')}
+          placeholder={t("paste_private_key")}
           type="password"
         />
-        {this.state.privateKeyError && <p className="error">{this.state.privateKeyError}</p>}
+        {this.state.privateKeyError && (
+          <p className="error">{this.state.privateKeyError}</p>
+        )}
       </>
     );
   }
 
   render() {
     return (
-      <section id="login" className={this.props.fullScreen ? 'fullscreen' : ''}>
+      <section id="login" className={this.props.fullScreen ? "fullscreen" : ""}>
         {this.state.showEula && (
           <EULA
             onAccept={() => this.loginAsNewUser()}
@@ -141,7 +143,11 @@ class Login extends Component {
         )}
         <div id="login-content">
           {!this.state.showSwitchAccount ? (
-            <form id="login-form" autocomplete="off" onSubmit={(e) => this.onLoginFormSubmit(e)}>
+            <form
+              id="login-form"
+              autocomplete="off"
+              onSubmit={(e) => this.onLoginFormSubmit(e)}
+            >
               <div id="create-account">
                 <img width="86" height="86" src={logo} alt="iris" />
                 <h1>iris</h1>
@@ -155,18 +161,18 @@ class Login extends Component {
                   id="login-form-name"
                   type="text"
                   name="name"
-                  placeholder={t('whats_your_name')}
+                  placeholder={t("whats_your_name")}
                 />
                 <p>
                   <Button id="sign-up" type="submit">
-                    {t('new_user_go')}
+                    {t("new_user_go")}
                   </Button>
                 </p>
                 <br />
                 {window.nostr ? (
                   <p>
                     <a href="" onClick={(e) => this.nostrExtensionLogin(e)}>
-                      {t('nostr_extension_login')}
+                      {t("nostr_extension_login")}
                     </a>
                   </p>
                 ) : null}
@@ -179,7 +185,7 @@ class Login extends Component {
                       this.setState({ showSwitchAccount: true });
                     }}
                   >
-                    {t('private_key_login')}
+                    {t("private_key_login")}
                   </a>
                 </p>
                 <p>
@@ -190,8 +196,12 @@ class Login extends Component {
           ) : (
             <div id="existing-account-login">
               <p>
-                <a href="" id="show-create-account" onClick={(e) => this.showCreateAccount(e)}>
-                  {t('back')}
+                <a
+                  href=""
+                  id="show-create-account"
+                  onClick={(e) => this.showCreateAccount(e)}
+                >
+                  {t("back")}
                 </a>
               </p>
               {this.renderExistingAccountLogin()}

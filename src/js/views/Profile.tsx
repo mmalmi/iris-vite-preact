@@ -22,7 +22,7 @@ import Events from "../nostr/Events";
 import Key from "../nostr/Key";
 import PubSub from "../nostr/PubSub";
 import SocialNetwork from "../nostr/SocialNetwork";
-import { translate as t } from "../translations/Translation";
+import { translate as t } from "../translations/Translation.mjs";
 
 import View from "./View";
 

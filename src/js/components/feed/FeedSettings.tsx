@@ -1,6 +1,6 @@
 import { useEffect, useState } from "preact/hooks";
 
-import { translate as t } from "../../translations/Translation";
+import { translate as t } from "../../translations/Translation.mjs";
 import { PrimaryButton } from "../buttons/Button";
 
 interface Settings {

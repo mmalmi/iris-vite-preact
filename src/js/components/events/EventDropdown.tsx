@@ -5,7 +5,7 @@ import Helpers from "../../Helpers";
 import localState from "../../LocalState";
 import Events from "../../nostr/Events";
 import Key from "../../nostr/Key";
-import { translate as t } from "../../translations/Translation";
+import { translate as t } from "../../translations/Translation.mjs";
 import Block from "../buttons/Block";
 import { PrimaryButton } from "../buttons/Button";
 import Copy from "../buttons/Copy";

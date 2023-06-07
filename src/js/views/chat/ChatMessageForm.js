@@ -3,12 +3,12 @@ import { FaceSmileIcon } from "@heroicons/react/24/outline";
 import { html } from "htm/preact";
 import $ from "jquery";
 
-import MessageForm from "../../components/MessageForm.jsx";
+import MessageForm from "../../components/MessageForm.tsx";
 import Helpers from "../../Helpers";
 import localState from "../../LocalState";
 import Events from "../../nostr/Events";
 import Key from "../../nostr/Key";
-import { translate as t } from "../../translations/Translation";
+import { translate as t } from "../../translations/Translation.mjs";
 
 class ChatMessageForm extends MessageForm {
   componentDidMount() {

@@ -4,7 +4,7 @@ import Component from "../../BaseComponent";
 import Helpers from "../../Helpers";
 import Icons from "../../Icons";
 import localState from "../../LocalState";
-import { translate as t } from "../../translations/Translation";
+import { translate as t } from "../../translations/Translation.mjs";
 
 const SETTINGS = {
   account: "account",
