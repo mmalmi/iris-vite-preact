@@ -1,9 +1,8 @@
 import { PaperAirplaneIcon } from "@heroicons/react/24/outline";
-import { FaceSmileIcon } from "@heroicons/react/24/outline";
 import { html } from "htm/preact";
 import $ from "jquery";
 
-import MessageForm from "../../components/MessageForm.tsx";
+import MessageForm from "../../components/MessageForm";
 import Helpers from "../../Helpers";
 import localState from "../../LocalState";
 import Events from "../../nostr/Events";

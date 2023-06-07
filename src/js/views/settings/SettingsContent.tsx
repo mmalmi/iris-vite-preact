@@ -2,9 +2,9 @@ import Component from "../../BaseComponent";
 
 import Account from "./Account.js";
 import Appearance from "./Appearance";
-import Backup from "./Backup.tsx";
-import Content from "./Content.tsx";
-import Dev from "./Dev.tsx";
+import Backup from "./Backup";
+import Content from "./Content";
+import Dev from "./Dev";
 import IrisAccount from "./IrisAccount.js";
 import Language from "./Language";
 import Network from "./Network.js";

@@ -15,6 +15,7 @@ const SETTINGS = {
   backup: "backup",
   language: "language",
   social_network: "social_network",
+  iris_account: undefined as string | undefined,
 };
 
 if (
@@ -48,6 +49,7 @@ export default class SettingsMenu extends Component {
             </h3>
           )}
           {Object.keys(SETTINGS).map((page) => {
+            if (!SETTINGS[page]) return;
             return (
               <a
                 href="#"

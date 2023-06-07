@@ -1,6 +1,6 @@
 import { html } from "htm/preact";
 
-import Torrent from "../components/Torrent.tsx";
+import Torrent from "../components/Torrent";
 
 import View from "./View";
 

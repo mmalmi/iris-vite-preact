@@ -8,7 +8,7 @@ import Icons from "../Icons";
 import localState from "../LocalState";
 import { translate as t } from "../translations/Translation.mjs";
 
-import MessageForm from "./MessageForm.tsx";
+import MessageForm from "./MessageForm";
 import SafeImg from "./SafeImg";
 import SearchBox from "./SearchBox";
 import Torrent from "./Torrent";

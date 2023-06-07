@@ -37,6 +37,11 @@ type PublicRelaySettings = {
 };
 export type RelayMetadata = { enabled: boolean; url: string };
 
+export type PopularRelay = {
+  url: string;
+  users: number;
+};
+
 /**
  * Relay management and subscriptions. Bundles subscriptions in to max 10 larger batches.
  */
@@ -88,7 +93,7 @@ const Relays = {
     }
     return urls;
   },
-  getPopularRelays: function () {
+  getPopularRelays: function (): Array<PopularRelay> {
     console.log("getPopularRelays");
     const relays = new Map<string, number>();
     Events.db.find({ kind: 3 }).forEach((event) => {

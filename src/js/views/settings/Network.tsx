@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "preact/compat";
 
 import { PrimaryButton as Button } from "../../components/buttons/Button";
 import localState from "../../LocalState";
 import PubSub from "../../nostr/PubSub";
 import Relays from "../../nostr/Relays";
-import { translate as t } from "../../translations/Translation";
+import { translate as t } from "../../translations/Translation.mjs";
 
 const Network = () => {
   const [relays, setRelays] = useState(Array.from(Relays.relays.values()));
-  const [popularRelays, setPopularRelays] = useState([]);
+  const [popularRelays, setPopularRelays] = useState([] as PopularRelay[]);
   const [newRelayUrl, setNewRelayUrl] = useState("");
 
   useEffect(() => {

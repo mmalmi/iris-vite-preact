@@ -1,6 +1,6 @@
 import { render } from "preact";
 
-import Main from "./js/Main.tsx";
+import Main from "./js/Main";
 
 import "./index.css";
 

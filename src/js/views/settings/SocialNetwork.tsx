@@ -13,13 +13,13 @@ export default class SocialNetworkSettings extends Component {
   constructor() {
     super();
     this.state = {
-      blockedUsers: [],
+      blockedUsers: [] as string[],
       globalFilter: {},
     };
   }
   render() {
     let hasBlockedUsers = false;
-    const blockedUsers = Array.from(this.state.blockedUsers).map((user) => {
+    const blockedUsers = this.state.blockedUsers.map((user) => {
       const bech32 = Key.toNostrBech32Address(user, "npub");
       if (bech32) {
         hasBlockedUsers = true;
@@ -56,10 +56,11 @@ export default class SocialNetworkSettings extends Component {
           <select
             value={this.state.globalFilter.maxFollowDistance}
             onChange={(e) => {
+              const target = e.target as HTMLInputElement;
               localState
                 .get("globalFilter")
                 .get("maxFollowDistance")
-                .put(parseInt(e.target.value));
+                .put(parseInt(target.value));
             }}
           >
             <option value="0">Off</option>
