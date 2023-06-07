@@ -17,7 +17,7 @@ interface Props {
 
 export default function Repost(props: Props) {
   const [allReposts, setAllReposts] = useState<string[]>([]);
-  const repostedEventId = Events.getRepostedEventId(props.event);
+  const repostedEventId = Events.getRepostedEventId(props.event) || "";
 
   useEffect(() => {
     if (props.notification) {

@@ -723,13 +723,13 @@ const Events = {
       .by("id", eventId)
       ?.tags?.find((t) => t[0] === "description")?.[1];
     if (!description) {
-      return;
+      return null;
     }
     let obj;
     try {
       obj = JSON.parse(description);
     } catch (e) {
-      return;
+      return null;
     }
     const npub = Key.toNostrBech32Address(obj.pubkey, "npub");
     return npub;

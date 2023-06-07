@@ -21,7 +21,7 @@ try {
 }
 
 const Session = {
-  public: undefined,
+  public: undefined as any,
   async logOut() {
     route("/");
     /*

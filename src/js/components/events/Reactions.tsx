@@ -53,7 +53,7 @@ const Reactions = (props) => {
     reposts: 0,
     reposted: false,
     likes: 0,
-    zappers: null,
+    zappers: null as string[] | null,
     totalZapped: "",
     liked: false,
     repostedBy: new Set<string>(),
@@ -212,7 +212,9 @@ const Reactions = (props) => {
     const zapEvents = Array.from(zaps?.values()).map((eventId) =>
       Events.db.by("id", eventId)
     );
-    const zappers = zapEvents.map((event) => Events.getZappingUser(event.id));
+    const zappers = zapEvents
+      .map((event) => Events.getZappingUser(event.id))
+      .filter((user) => user !== null) as string[];
     const totalZapped = zapEvents.reduce((acc, event) => {
       const bolt11 = event?.tags.find((tag) => tag[0] === "bolt11")[1];
       if (!bolt11) {

@@ -226,7 +226,7 @@ export default {
   },
   toNostrBech32Address: function (address: string, prefix: string) {
     if (!address) {
-      return;
+      return null;
     }
     if (!prefix) {
       throw new Error("prefix is required");

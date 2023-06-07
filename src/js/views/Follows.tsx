@@ -13,9 +13,13 @@ import { translate as t } from "../translations/Translation.mjs";
 import View from "./View";
 
 class Follows extends View {
+  follows: Set<string>;
+  myPub: string | null;
+
   constructor() {
     super();
-    this.follows = [];
+    this.myPub = null;
+    this.follows = new Set();
     this.id = "follows-view";
     this.state = { follows: [], contacts: {} };
   }
@@ -64,13 +68,12 @@ class Follows extends View {
   );
 
   getFollows() {
-    SocialNetwork.getFollowedByUser(
-      Key.toNostrHexAddress(this.props.id),
-      (follows) => {
+    const hex = Key.toNostrHexAddress(this.props.id) || "";
+    hex &&
+      SocialNetwork.getFollowedByUser(hex, (follows) => {
         this.follows = follows; // TODO buggy?
         this.updateSortedFollows();
-      }
-    );
+      });
   }
 
   shouldComponentUpdate() {
@@ -78,13 +81,12 @@ class Follows extends View {
   }
 
   getFollowers() {
-    SocialNetwork.getFollowersByUser(
-      Key.toNostrHexAddress(this.props.id),
-      (followers) => {
+    const hex = Key.toNostrHexAddress(this.props.id) || "";
+    hex &&
+      SocialNetwork.getFollowersByUser(hex, (followers) => {
         this.follows = followers;
         this.updateSortedFollows();
-      }
-    );
+      });
   }
 
   componentDidMount() {
@@ -102,11 +104,11 @@ class Follows extends View {
 
   renderFollows() {
     return this.state.follows.map((hexKey) => {
-      const npub = Key.toNostrBech32Address(hexKey, "npub");
+      const npub = Key.toNostrBech32Address(hexKey, "npub") || "";
       return (
         <div key={npub} className="profile-link-container">
           <a href={`/${npub}`} className="profile-link">
-            <Identicon str={npub} width="49" />
+            <Identicon str={npub} width={49} />
             <div>
               <Name pub={npub} />
               <br />
