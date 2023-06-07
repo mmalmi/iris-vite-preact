@@ -1,10 +1,10 @@
 import { memo, useState } from "react";
+import { Event } from "nostr-tools";
 import styled, { css, keyframes } from "styled-components";
 
 import Icons from "../../Icons";
 import Events from "../../nostr/Events";
 import Key from "../../nostr/Key";
-import { Event } from "../nostr-tools";
 
 import EventComponent from "./EventComponent";
 import NoteImageModal from "./NoteImageModal";

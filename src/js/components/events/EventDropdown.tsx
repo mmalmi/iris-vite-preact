@@ -1,3 +1,4 @@
+import { Event } from "nostr-tools";
 import { useState } from "preact/hooks";
 import styled from "styled-components";
 
@@ -12,7 +13,6 @@ import Copy from "../buttons/Copy";
 import FollowButton from "../buttons/Follow";
 import Dropdown from "../Dropdown";
 import Modal from "../modal/Modal";
-import { Event } from "../nostr-tools";
 
 import EventRelaysList from "./EventRelaysList";
 
@@ -31,7 +31,7 @@ const EventDetail = styled.div`
 const EventDropdown = (props: EventDropdownProps) => {
   const { event, id } = props;
 
-  const [muted, setMuted] = useState<boolean>(false);
+  const [muted] = useState<boolean>(false); // TODO setMuted
   const [showingDetails, setShowingDetails] = useState(false);
 
   const closeModal = () => setShowingDetails(false);
@@ -64,7 +64,7 @@ const EventDropdown = (props: EventDropdownProps) => {
     e.preventDefault();
     if (confirm("Publicly report and hide message?")) {
       const hexId = Key.toNostrHexAddress(props.id);
-      if (hexId) {
+      if (hexId && props.event) {
         Events.publish({
           kind: 5,
           content: "reported",
@@ -80,9 +80,10 @@ const EventDropdown = (props: EventDropdownProps) => {
 
   const translate = (e: any) => {
     e.preventDefault();
-    Helpers.translateText(props.event.content).then((res) => {
-      props.onTranslate?.(res);
-    });
+    props.event &&
+      Helpers.translateText(props.event.content).then((res) => {
+        props.onTranslate?.(res);
+      });
   };
 
   const onBroadcast = (e: any) => {
@@ -108,12 +109,12 @@ const EventDropdown = (props: EventDropdownProps) => {
         <Copy
           key={`${id!}copy_id`}
           text={t("copy_note_ID")}
-          copyStr={Key.toNostrBech32Address(id, "note")}
+          copyStr={Key.toNostrBech32Address(id, "note") || ""}
         />
         <a href="#" onClick={onMute}>
           {muted ? t("unmute_notifications") : t("mute_notifications")}
         </a>
-        {event && (
+        {event ? (
           <>
             <a href="#" onClick={onBroadcast}>
               {t("resend_to_relays")}
@@ -151,6 +152,8 @@ const EventDropdown = (props: EventDropdownProps) => {
               {t("event_detail")}
             </a>
           </>
+        ) : (
+          <></>
         )}
       </Dropdown>
       {showingDetails && (

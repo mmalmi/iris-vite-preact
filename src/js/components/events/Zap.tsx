@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
+import { Event } from "nostr-tools";
 import { route } from "preact-router";
 
 import Icons from "../../Icons";
 import Events from "../../nostr/Events";
 import Key from "../../nostr/Key";
 import Name from "../Name";
-import { Event } from "../nostr-tools";
 
 import EventComponent from "./EventComponent";
 

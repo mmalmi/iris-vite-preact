@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { XMarkIcon } from "@heroicons/react/24/solid";
+import { Event } from "nostr-tools";
 import styled from "styled-components";
 
 import Helpers from "../../Helpers";
@@ -17,7 +18,6 @@ import Relays from "../../nostr/Relays";
 import { PrimaryButton as Button } from "../buttons/Button";
 import CopyButton from "../buttons/Copy";
 import Name from "../Name";
-import { Event } from "../nostr-tools";
 import QrCode from "../QrCode";
 
 import Modal from "./Modal";

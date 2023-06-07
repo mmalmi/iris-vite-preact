@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { HeartIcon as HeartIconFull } from "@heroicons/react/24/solid";
+import { Event } from "nostr-tools";
 import { route } from "preact-router";
 
 import Events from "../../nostr/Events";
 import Key from "../../nostr/Key";
 import Name from "../Name";
-import { Event } from "../nostr-tools";
 
 import EventComponent from "./EventComponent";
 

@@ -1,5 +1,6 @@
+import { Event } from "nostr-tools";
+
 import Events from "../../nostr/Events";
-import { Event } from "../nostr-tools";
 
 export default class SortedEventMap {
   private eventMap: Map<string, Event>; // or should we store just strings, getting Events from loki?

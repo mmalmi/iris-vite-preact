@@ -32,12 +32,15 @@ class Block extends Component<Props> {
   onClick(e) {
     e.preventDefault();
     const newValue = !this.state[this.key];
-    SocialNetwork.block(Key.toNostrHexAddress(this.props.id), newValue);
+    const hex = Key.toNostrHexAddress(this.props.id);
+    hex && SocialNetwork.block(hex, newValue);
   }
 
   componentDidMount() {
     SocialNetwork.getBlockedUsers((blocks) => {
-      const blocked = blocks?.has(Key.toNostrHexAddress(this.props.id));
+      const blocked = blocks?.has(
+        Key.toNostrHexAddress(this.props.id) as string
+      );
       this.setState({ blocked });
     });
   }

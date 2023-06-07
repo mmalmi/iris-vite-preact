@@ -1,7 +1,8 @@
+import { Event } from "nostr-tools";
+
 import Icons from "../../Icons";
 import Key from "../../nostr/Key";
 import Name from "../Name";
-import { Event } from "../nostr-tools";
 
 type Props = {
   event: Event;

@@ -88,7 +88,7 @@ const EventComponent = (props: EventComponentProps) => {
     retrievingTimeout.current = setTimeout(() => {
       setState((prevState) => ({ ...prevState, retrieving: true }));
     }, 1000);
-    Events.getEventById(hexId, true, (event) => handleEvent(event));
+    hexId && Events.getEventById(hexId, true, (event) => handleEvent(event));
 
     return () => {
       subscriptions.forEach((unsub) => {
@@ -110,7 +110,7 @@ const EventComponent = (props: EventComponentProps) => {
 
   const renderDropdown = () => {
     return props.asInlineQuote ? null : (
-      <EventDropdown id={props.id} event={state.event} />
+      <EventDropdown id={props.id || ""} event={state.event} />
     );
   };
 
@@ -196,7 +196,9 @@ const EventComponent = (props: EventComponentProps) => {
         event={state.event}
         meta={state.meta}
         fullWidth={props.fullWidth}
-        fadeIn={props.feedOpenedAt < state.event.created_at}
+        fadeIn={
+          !props.feedOpenedAt || props.feedOpenedAt < state.event.created_at
+        }
         {...props}
       />
     );
