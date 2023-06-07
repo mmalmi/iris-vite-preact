@@ -11,6 +11,7 @@ import SocialNetwork from "../nostr/SocialNetwork";
 import { translate as t } from "../translations/Translation.mjs";
 
 import View from "./View";
+import ErrorBoundary from "../components/ErrorBoundary";
 
 class Follows extends View {
   follows: Set<string>;
@@ -160,7 +161,9 @@ class Follows extends View {
         )}
         <div id="follows-list">
           {this.state.follows.length > 300 ? (
-            <ScrollViewport>{this.renderFollows()}</ScrollViewport>
+            <ScrollViewport>
+              {this.renderFollows()}
+            </ScrollViewport>
           ) : (
             this.renderFollows()
           )}
