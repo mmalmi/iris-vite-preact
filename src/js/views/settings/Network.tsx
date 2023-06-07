@@ -3,7 +3,7 @@ import { useEffect, useState } from "preact/compat";
 import { PrimaryButton as Button } from "../../components/buttons/Button";
 import localState from "../../LocalState";
 import PubSub from "../../nostr/PubSub";
-import Relays from "../../nostr/Relays";
+import Relays, { PopularRelay } from "../../nostr/Relays";
 import { translate as t } from "../../translations/Translation.mjs";
 
 const Network = () => {
@@ -103,7 +103,9 @@ const Network = () => {
               type="text"
               placeholder={t("new_relay_url")}
               value={newRelayUrl}
-              onChange={(event) => setNewRelayUrl(event.target.value)}
+              onChange={(event) =>
+                setNewRelayUrl((event.target as HTMLInputElement).value)
+              }
             />
           </div>
           <div className="flex-cell no-flex">
