@@ -4,7 +4,7 @@ import {
   generatePrivateKey,
   getPublicKey,
   nip04,
-  signEvent,
+  signEvent, UnsignedEvent,
 } from "nostr-tools";
 import { route } from "preact-router";
 
@@ -118,7 +118,7 @@ export default {
       return Promise.reject("no private key");
     }
   },
-  sign: async function (event: Event): Promise<string> {
+  sign: async function (event: Event | UnsignedEvent): Promise<string> {
     const priv = this.getPrivKey();
     if (priv) {
       return signEvent(event, priv);

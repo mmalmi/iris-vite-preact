@@ -1,4 +1,5 @@
 import { debounce } from "lodash";
+import {Event, UnsignedEvent} from "nostr-tools";
 import { route } from "preact-router";
 
 import Component from "../../BaseComponent";
@@ -317,15 +318,15 @@ export default class IrisAccount extends Component {
       return;
     }
     const pubkey = Key.getPubKey();
-    const event = {
+    const event: Partial<Event> = {
       content: `decline iris.to/${this.state.existing.name}`,
       kind: 1,
       tags: [],
       pubkey,
       created_at: Math.floor(Date.now() / 1000),
     };
-    event.id = Events.getEventHash(event);
-    event.sig = await Key.sign(event);
+    event.id = Events.getEventHash(event as UnsignedEvent);
+    event.sig = await Key.sign(event as UnsignedEvent);
     // post signed event as request body to https://api.iris.to/user/confirm_user
     const res = await fetch("https://api.iris.to/user/decline_user", {
       method: "POST",
