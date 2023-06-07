@@ -5,7 +5,6 @@ import { translate as t } from "../../translations/Translation.mjs";
 export default class Content extends Component {
   constructor() {
     super();
-    this.id = "settings";
     this.state = {
       settings: {},
     };

@@ -35,7 +35,6 @@ class Note extends View {
         <div className="mar-top15">
           <PublicMessageForm
             placeholder={t("whats_on_your_mind")}
-            activeChat="public"
             forceAutofocusMobile={true}
             autofocus={true}
             onSubmit={() => route("/")}

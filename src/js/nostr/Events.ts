@@ -1,6 +1,7 @@
 import { debounce } from "lodash";
 import Loki from "lokijs";
 import { Event, Filter, getEventHash, matchFilter } from "nostr-tools";
+import { EventTemplate } from "nostr-tools";
 
 import FuzzySearch from "../FuzzySearch";
 import localState from "../LocalState";
@@ -707,7 +708,7 @@ const Events = {
     }
     return event as Event;
   },
-  async sign(event: Partial<Event>) {
+  async sign(event: EventTemplate) {
     if (!event.tags) {
       event.tags = [];
     }

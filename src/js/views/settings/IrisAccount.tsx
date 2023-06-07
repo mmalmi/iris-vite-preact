@@ -1,5 +1,5 @@
 import { debounce } from "lodash";
-import {Event, UnsignedEvent} from "nostr-tools";
+import { Event, UnsignedEvent } from "nostr-tools";
 import { route } from "preact-router";
 
 import Component from "../../BaseComponent";

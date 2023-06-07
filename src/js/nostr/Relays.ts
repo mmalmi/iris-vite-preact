@@ -65,8 +65,8 @@ const Relays = {
     );
     this.manage();
   },
-  enabledRelays(relays: Map<string, RelayMetadata> = this.relays) {
-    return Array.from(relays.values())
+  enabledRelays(relays?: Map<string, RelayMetadata>) {
+    return Array.from((relays || this.relays).values())
       .filter((v) => v.enabled)
       .map((v) => v.url);
   },
@@ -169,7 +169,7 @@ const Relays = {
         } else if (!this.relays.has(url)) {
           // `data` was missing `url` here, and those objects would be stored.
           // So this is backward compat.
-          this.relays.set(url, { url, enabled: data.enabled });
+          this.relays.set(url, { url, enabled: !!data.enabled });
           if (data.enabled) {
             PubSub.relayPool.addOrGetRelay(url);
           }

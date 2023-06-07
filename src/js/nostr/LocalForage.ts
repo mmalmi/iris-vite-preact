@@ -17,7 +17,9 @@ const getLatestByFollows = () => {
   latestByFollows.applyFind({ kind: 1 });
   latestByFollows.applySimpleSort("created_at", { desc: true });
   latestByFollows.applyWhere((event: Event) => {
-    return SocialNetwork.followDistanceByUser.get(event.pubkey) <= 1;
+    const distance =
+      SocialNetwork.followDistanceByUser.get(event.pubkey) || Infinity;
+    return distance <= 1;
   });
   return latestByFollows;
 };
@@ -45,7 +47,7 @@ export default {
         return Events.db.by("id", eventId);
       })
       .slice(0, 50);
-    let dms = [];
+    let dms = [] as Event[];
     for (const set of Events.directMessagesByUser.values()) {
       set.eventIds.forEach((eventId: any) => {
         dms.push(Events.db.by("id", eventId));

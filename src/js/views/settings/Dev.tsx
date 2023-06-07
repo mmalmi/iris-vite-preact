@@ -10,7 +10,10 @@ export default class DevSettings extends Component {
           checked={
             this.state[key] === undefined ? defaultValue : this.state[key]
           }
-          onChange={(e) => localState.get("dev").get(key).put(e.target.checked)}
+          onChange={(e) => {
+            const checked = (e.target as HTMLInputElement).checked;
+            localState.get("dev").get(key).put(checked);
+          }}
         />
         <label htmlFor={key}>{label}</label>
       </p>

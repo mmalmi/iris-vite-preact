@@ -112,7 +112,7 @@ class MyIdenticon extends Component<Props, State> {
         <div class="identicon">
           {hasPicture ? (
             <SafeImg
-              src={this.state.picture}
+              src={this.state.picture as string}
               width={width}
               square={true}
               style={{ objectFit: "cover" }}
@@ -122,7 +122,7 @@ class MyIdenticon extends Component<Props, State> {
             <img
               width={width}
               style="max-width:100%"
-              src={this.state.identicon}
+              src={this.state.identicon || ""}
             />
           )}
         </div>

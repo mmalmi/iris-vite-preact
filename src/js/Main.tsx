@@ -7,7 +7,7 @@ import MediaPlayer from "./components/MediaPlayer";
 import Menu from "./components/Menu";
 import Modal from "./components/modal/Modal";
 import Session from "./nostr/Session";
-import { translationLoaded } from "./translations/Translation";
+import { translationLoaded } from "./translations/Translation.mjs";
 import About from "./views/About";
 import Chat from "./views/chat/Chat";
 import EditProfile from "./views/EditProfile";
