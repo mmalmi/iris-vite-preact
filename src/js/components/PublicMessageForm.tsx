@@ -1,21 +1,42 @@
 import { PaperAirplaneIcon } from "@heroicons/react/24/outline";
 import { html } from "htm/preact";
 import $ from "jquery";
+import { Event } from "nostr-tools";
 import { createRef } from "preact";
 
+import Component from "../BaseComponent";
 import Helpers from "../Helpers";
 import Icons from "../Icons";
 import localState from "../LocalState";
+import Events from "../nostr/Events";
+import Key from "../nostr/Key";
 import { translate as t } from "../translations/Translation.mjs";
 
-import MessageForm from "./MessageForm";
 import SafeImg from "./SafeImg";
 import SearchBox from "./SearchBox";
 import Torrent from "./Torrent";
 
 const mentionRegex = /\B@[\u00BF-\u1FFF\u2C00-\uD7FF\w]*$/;
 
-class PublicMessageForm extends MessageForm {
+interface IProps {
+  replyingTo?: string;
+  forceAutofocusMobile?: boolean;
+  autofocus?: boolean;
+  onSubmit?: (msg: any) => void;
+  waitForFocus?: boolean;
+  class?: string;
+  index?: string;
+  placeholder?: string;
+}
+
+interface IState {
+  attachments?: any[];
+  torrentId?: string;
+  mentioning?: boolean;
+  focused?: boolean;
+}
+
+class PublicMessageForm extends Component<IProps, IState> {
   newMsgRef = createRef();
 
   componentDidMount() {
@@ -57,7 +78,7 @@ class PublicMessageForm extends MessageForm {
     if (!text.length) {
       return;
     }
-    const msg = { text };
+    const msg: any = { text };
     if (this.props.replyingTo) {
       msg.replyingTo = this.props.replyingTo;
     }
@@ -66,7 +87,7 @@ class PublicMessageForm extends MessageForm {
     }
     await this.sendNostr(msg);
     this.props.onSubmit && this.props.onSubmit(msg);
-    this.setState({ attachments: null, torrentId: null });
+    this.setState({ attachments: undefined, torrentId: undefined });
     textEl.val("");
     textEl.height("");
     this.saveDraftToHistory();
@@ -273,7 +294,7 @@ class PublicMessageForm extends MessageForm {
                   href=""
                   onClick=${(e) => {
                     e.preventDefault();
-                    this.setState({ attachments: null });
+                    this.setState({ attachments: undefined });
                   }}
                   >${t("remove_attachment")}</a
                 >
@@ -314,6 +335,96 @@ class PublicMessageForm extends MessageForm {
         })}
       </div>
     </form>`;
+  }
+
+  async sendNostr(msg: { text: string; replyingTo?: string }) {
+    const event = {
+      kind: 1,
+      content: msg.text,
+    } as any;
+
+    if (msg.replyingTo) {
+      const id = Key.toNostrHexAddress(msg.replyingTo);
+      if (!id) {
+        throw new Error("invalid replyingTo");
+      }
+      const replyingTo: Event = await new Promise((resolve) => {
+        Events.getEventById(id, true, (e) => resolve(e));
+      });
+      event.tags = replyingTo.tags.filter((tag) => tag[0] === "p");
+      let rootTag = replyingTo.tags?.find(
+        (t) => t[0] === "e" && t[3] === "root"
+      );
+      if (!rootTag) {
+        rootTag = replyingTo.tags?.find((t) => t[0] === "e");
+      }
+      if (rootTag) {
+        event.tags.unshift(["e", id, "", "reply"]);
+        event.tags.unshift(["e", rootTag[1], "", "root"]);
+      } else {
+        event.tags.unshift(["e", id, "", "root"]);
+      }
+      if (
+        !event.tags?.find((t) => t[0] === "p" && t[1] === replyingTo.pubkey)
+      ) {
+        event.tags.push(["p", replyingTo.pubkey]);
+      }
+    }
+
+    function handleTagged(regex, tagType) {
+      const taggedItems = [...msg.text.matchAll(regex)]
+        .map((m) => m[0])
+        .filter((m, i, a) => a.indexOf(m) === i);
+
+      if (taggedItems) {
+        event.tags = event.tags || [];
+        for (const tag of taggedItems) {
+          const match = tag.match(/npub[a-zA-Z0-9]{59,60}/)?.[0];
+          const hexTag = match && Key.toNostrHexAddress(match);
+          if (!hexTag) {
+            continue;
+          }
+          const newTag = [tagType, hexTag, "", "mention"];
+          // add if not already present
+          if (
+            !event.tags?.find((t) => t[0] === newTag[0] && t[1] === newTag[1])
+          ) {
+            event.tags.push(newTag);
+          }
+        }
+      }
+    }
+
+    handleTagged(Helpers.pubKeyRegex, "p");
+    handleTagged(Helpers.noteRegex, "e");
+
+    const hashtags = [...msg.text.matchAll(Helpers.hashtagRegex)].map((m) =>
+      m[0].slice(1)
+    );
+    if (hashtags.length) {
+      event.tags = event.tags || [];
+      for (const hashtag of hashtags) {
+        if (!event.tags?.find((t) => t[0] === "t" && t[1] === hashtag)) {
+          event.tags.push(["t", hashtag]);
+        }
+      }
+    }
+
+    console.log("sending event", event);
+    return Events.publish(event);
+  }
+
+  checkMention(event: any) {
+    const val = event.target.value.slice(0, event.target.selectionStart);
+    const matches = val.match(mentionRegex);
+    if (matches) {
+      const match = matches[0].slice(1);
+      if (!Key.toNostrHexAddress(match)) {
+        this.setState({ mentioning: match });
+      }
+    } else if (this.state.mentioning) {
+      this.setState({ mentioning: undefined });
+    }
   }
 }
 

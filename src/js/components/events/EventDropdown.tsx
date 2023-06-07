@@ -17,7 +17,7 @@ import Modal from "../modal/Modal";
 import EventRelaysList from "./EventRelaysList";
 
 interface EventDropdownProps {
-  event?: Event & { id: string };
+  event?: Event;
   onTranslate?: (text: string) => void;
   id: string;
 }
@@ -156,7 +156,7 @@ const EventDropdown = (props: EventDropdownProps) => {
           <></>
         )}
       </Dropdown>
-      {showingDetails && (
+      {event && showingDetails && (
         <Modal showContainer onClose={closeModal}>
           <EventDetail>
             <EventRelaysList event={event} />

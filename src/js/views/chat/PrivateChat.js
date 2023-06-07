@@ -13,7 +13,7 @@ import PubSub from "../../nostr/PubSub";
 import Session from "../../nostr/Session";
 import { translate as t } from "../../translations/Translation.mjs";
 
-import ChatMessageForm from "./ChatMessageForm";
+import ChatMessageForm from "./ChatMessageForm.js";
 
 const caretDownSvg = html`
   <svg

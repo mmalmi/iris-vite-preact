@@ -44,14 +44,19 @@ export default function Like(props: Props) {
     : "liked a note";
 
   useEffect(() => {
-    const unsub = Events.getRepliesAndReactions(
-      likedId,
-      (_replies: Set<string>, likedBy: Set<string>) => {
-        setAllLikes(Array.from(likedBy));
-      }
-    );
-    return () => unsub();
+    if (likedId) {
+      return Events.getRepliesAndReactions(
+        likedId,
+        (_replies: Set<string>, likedBy: Set<string>) => {
+          setAllLikes(Array.from(likedBy));
+        }
+      );
+    }
   }, [likedId]);
+
+  if (!likedId) {
+    return null;
+  }
 
   const userLink = `/${Key.toNostrBech32Address(props.event.pubkey, "npub")}`;
   return (

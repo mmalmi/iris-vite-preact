@@ -77,7 +77,7 @@ const Note = ({
 
   let text = event.content || "";
   meta = meta || {};
-  const attachments = [];
+  const attachments = [] as any[];
   const urls = text.match(/(https?:\/\/[^\s]+)/g);
   if (urls) {
     urls.forEach((url) => {
@@ -158,7 +158,7 @@ const Note = ({
     ) {
       return;
     }
-    if (window.getSelection().toString()) {
+    if (window.getSelection()?.toString()) {
       return;
     }
     event.stopPropagation();
@@ -221,7 +221,7 @@ const Note = ({
   function renderShowThread() {
     return (
       <div style={{ flexBasis: "100%", marginBottom: "12px" }}>
-        <a href={`/${Key.toNostrBech32Address(rootMsg, "note")}`}>
+        <a href={`/${Key.toNostrBech32Address(rootMsg || "", "note")}`}>
           {t("show_thread")}
         </a>
       </div>
@@ -327,7 +327,6 @@ const Note = ({
         waitForFocus={true}
         autofocus={!standalone}
         replyingTo={event.id}
-        replyingToUser={event.pubkey}
         placeholder={t("write_your_reply")}
       />
     );

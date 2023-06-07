@@ -3,6 +3,7 @@ import { Event } from "nostr-tools";
 import styled from "styled-components";
 
 import Events from "../../nostr/Events";
+import { EventMetadata } from "../../nostr/EventsMeta";
 import { translate as t } from "../../translations/Translation.mjs";
 
 const Wrapper = styled.div`
@@ -30,14 +31,14 @@ const Codeblock = styled.pre`
 `;
 
 const EventRelaysList: FC<{ event: Event }> = ({ event }) => {
-  const [eventMeta, setEventMeta] = useState(null);
+  const [eventMeta, setEventMeta] = useState(null as null | EventMetadata);
 
   useEffect(() => {
     if (!event?.id) {
       return;
     }
     const id = Events.getOriginalPostEventId(event);
-    const val = Events.eventsMetaDb.get(id);
+    const val = id && Events.eventsMetaDb.get(id);
     if (val) {
       setEventMeta(val);
     }

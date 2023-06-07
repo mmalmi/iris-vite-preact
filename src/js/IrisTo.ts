@@ -1,4 +1,4 @@
-import { Event } from "nostr-tools";
+import { Event, UnsignedEvent } from "nostr-tools";
 
 import Events from "./nostr/Events";
 import Key from "./nostr/Key";
@@ -61,7 +61,7 @@ export default {
 
   async enableReserved(name) {
     const pubkey = Key.getPubKey();
-    const event: Event = {
+    const event: UnsignedEvent = {
       content: `iris.to/${name}`,
       kind: 1,
       tags: [],
