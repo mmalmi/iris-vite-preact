@@ -18,8 +18,8 @@ import Name from "./Name";
 import SearchBox from "./SearchBox";
 
 export default class Header extends Component {
-  chatId = null;
-  iv = null;
+  chatId = null as string | null;
+  iv = null as number | null;
 
   constructor() {
     super();
@@ -39,7 +39,7 @@ export default class Header extends Component {
 
   componentWillUnmount() {
     super.componentWillUnmount();
-    clearInterval(this.iv);
+    this.iv && clearInterval(this.iv);
     document.removeEventListener("keydown", this.escFunction, false);
   }
 
@@ -89,7 +89,7 @@ export default class Header extends Component {
             );
             this.setState({ title });
           } else {
-            const title = <Name key={this.chatId} pub={this.chatId} />;
+            const title = <Name key={this.chatId} pub={this.chatId || ""} />;
             this.setState({ title });
           }
         }
@@ -227,13 +227,13 @@ export default class Header extends Component {
           // also synchronously make element visible so it can be focused
           document
             .querySelector(".mobile-search-visible")
-            .classList.remove("hidden-xs", "hidden");
+            ?.classList.remove("hidden-xs", "hidden");
           document
             .querySelector(".mobile-search-hidden")
-            .classList.remove("visible-xs-inline-block");
+            ?.classList.remove("visible-xs-inline-block");
           document
             .querySelector(".mobile-search-hidden")
-            .classList.add("hidden");
+            ?.classList.add("hidden");
           const input = document.querySelector(".search-box input");
           if (input) {
             setTimeout(() => {

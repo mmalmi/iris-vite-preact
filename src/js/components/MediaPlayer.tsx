@@ -103,7 +103,7 @@ class MediaPlayer extends Component<Record<string, never>, State> {
     if (existing) {
       this.onTorrent(existing);
     } else {
-      client.add(this.torrentId, (e: Error, t: any) => this.onTorrent(t));
+      client.add(this.torrentId, (_e: Error, t: any) => this.onTorrent(t));
     }
   }
 
@@ -128,7 +128,7 @@ class MediaPlayer extends Component<Record<string, never>, State> {
           >
             {s.splitPath
               ? s.splitPath.map((str, i) => {
-                  if (i === s.splitPath.length - 1) {
+                  if (i === (s.splitPath?.length || 0) - 1) {
                     str = str.split(".").slice(0, -1).join(".");
                     return (
                       <p>

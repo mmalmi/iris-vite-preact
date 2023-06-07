@@ -1,4 +1,4 @@
-interface FeedProps {
+export interface FeedProps {
   index?: string;
   scrollElement?: HTMLElement;
   filter?: any;
@@ -7,7 +7,7 @@ interface FeedProps {
   nostrUser?: string;
 }
 
-interface FeedState {
+export interface FeedState {
   sortedEvents: string[];
   queuedEvents: string[];
   displayCount: number;
@@ -24,4 +24,3 @@ interface FeedState {
   showNewMsgsFixedTop?: boolean;
 }
 
-export { FeedProps, FeedState };

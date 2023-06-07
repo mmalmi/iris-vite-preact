@@ -44,22 +44,23 @@ export default function Zap(props: Props) {
     : "zapped a note";
 
   useEffect(() => {
-    const unsub = Events.getRepliesAndReactions(
-      zappedId,
-      (
-        _a: Set<string>,
-        _b: Set<string>,
-        _c: number,
-        _d: Set<string>,
-        zappedBy: Set<string>
-      ) => {
-        setAllZaps(Array.from(zappedBy.values()));
-      }
-    );
-    return () => unsub();
+    return zappedId
+      ? Events.getRepliesAndReactions(
+          zappedId,
+          (
+            _a: Set<string>,
+            _b: Set<string>,
+            _c: number,
+            _d: Set<string>,
+            zappedBy: Set<string>
+          ) => {
+            setAllZaps(Array.from(zappedBy.values()));
+          }
+        )
+      : () => null;
   }, [zappedId]);
 
-  let zappingUser = null;
+  let zappingUser = null as string | null;
   try {
     zappingUser = Events.getZappingUser(props.event.id);
   } catch (e) {
@@ -67,9 +68,13 @@ export default function Zap(props: Props) {
     return "";
   }
   const userLink = `/${zappingUser}`;
+
   return (
     <div className="msg">
-      <div className="msg-content" onClick={(e) => messageClicked(e, zappedId)}>
+      <div
+        className="msg-content"
+        onClick={(e) => messageClicked(e, zappedId || "")}
+      >
         <div style={{ display: "flex", flex: 1, "flex-direction": "column" }}>
           <div style={{ display: "flex", alignItems: "center" }}>
             <i className="zap-btn zapped" style={{ marginRight: "15px" }}>
@@ -77,7 +82,7 @@ export default function Zap(props: Props) {
             </i>
             <div>
               <a href={userLink} style={{ marginRight: "5px" }}>
-                <Name pub={zappingUser} />
+                <Name pub={zappingUser || ""} />
               </a>
               {allZaps.length > 1 && (
                 <span> and {allZaps.length - 1} others </span>

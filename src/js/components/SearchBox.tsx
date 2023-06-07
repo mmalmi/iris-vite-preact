@@ -91,7 +91,7 @@ class SearchBox extends Component<Props, State> {
     $(document)
       .off("keydown")
       .on("keydown", (e) => {
-        if (e.key === "Tab" && document.activeElement.tagName === "BODY") {
+        if (e.key === "Tab" && document.activeElement?.tagName === "BODY") {
           e.preventDefault();
           $(this.base).find("input").focus();
         } else if (e.key === "Escape") {
@@ -190,7 +190,7 @@ class SearchBox extends Component<Props, State> {
                 this.props.query || $(this.base).find("input").first().val()
               )
           ) {
-            this.props.onSelect({ key: pubKey });
+            this.props.onSelect?.({ key: pubKey });
           }
         });
       }
@@ -238,7 +238,7 @@ class SearchBox extends Component<Props, State> {
     this.close();
   }
 
-  onResultFocus(e, index) {
+  onResultFocus(_e, index) {
     this.setState({ selected: index });
   }
 

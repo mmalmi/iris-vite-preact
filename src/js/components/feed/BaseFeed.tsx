@@ -1,4 +1,3 @@
-import React from "react";
 import { throttle } from "lodash";
 import isEqual from "lodash/isEqual";
 
@@ -64,7 +63,7 @@ class Feed extends BaseComponent<FeedProps, FeedState> {
   getSettings(override = { display: undefined }) {
     // override default & saved settings with url params
     let settings = { ...DEFAULT_SETTINGS };
-    if (["global", "follows"].includes(this.props?.index)) {
+    if (["global", "follows"].includes(this.props?.index || "")) {
       settings = Object.assign(settings, override);
     }
     if (this.props?.index !== "notifications" && override.display) {
@@ -74,7 +73,9 @@ class Feed extends BaseComponent<FeedProps, FeedState> {
       settings.showReplies = false;
     }
     if (
-      ["postsAndReplies", "notifications", "likes"].includes(this.props?.index)
+      ["postsAndReplies", "notifications", "likes"].includes(
+        this.props?.index || ""
+      )
     ) {
       settings.showReplies = true;
     }
