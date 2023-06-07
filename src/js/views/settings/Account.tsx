@@ -1,5 +1,5 @@
-import * as bech32 from "bech32-buffer";
 import { html } from "htm/preact";
+import { nip19 } from "nostr-tools";
 import { route } from "preact-router";
 
 import Component from "../../BaseComponent";
@@ -9,7 +9,7 @@ import Helpers from "../../Helpers";
 import Events from "../../nostr/Events";
 import Key from "../../nostr/Key";
 import Session from "../../nostr/Session";
-import { translate as t } from "../../translations/Translation";
+import { translate as t } from "../../translations/Translation.mjs";
 import { ExistingAccountLogin } from "../Login";
 
 export default class Account extends Component {
@@ -48,11 +48,11 @@ export default class Account extends Component {
     let myPriv32;
     if (myPrivHex) {
       // eslint-disable-next-line no-undef
-      myPriv32 = bech32.encode("nsec", Buffer.from(myPrivHex, "hex"));
+      myPriv32 = nip19.nsecEncode(myPrivHex);
     }
     const myPub = Key.getPubKey();
     // eslint-disable-next-line no-undef
-    const myNpub = bech32.encode("npub", Buffer.from(myPub, "hex"));
+    const myNpub = nip19.npubEncode(myPub);
 
     const hasPriv = !!Key.getPrivKey();
     return (
