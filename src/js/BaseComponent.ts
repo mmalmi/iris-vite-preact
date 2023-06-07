@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { PureComponent } from "react";
+import { PureComponent } from "preact/compat";
 
 import { Callback, EventListener } from "./LocalState";
 
