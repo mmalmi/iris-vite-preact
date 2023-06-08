@@ -1,6 +1,5 @@
 import { html } from "htm/preact";
 import $ from "jquery";
-import ScrollViewport from "preact-scroll-viewport";
 
 import Component from "../../BaseComponent";
 import Helpers from "../../Helpers";
@@ -75,23 +74,23 @@ class ChatList extends Component {
     const activeChat = this.props.activeChat;
 
     return html`<section class="sidebar ${this.props.class || ""}">
-      <div id="enable-notifications-prompt" onClick=${() =>
-        this.enableDesktopNotifications()}>
+      <div
+        id="enable-notifications-prompt"
+        onClick=${() => this.enableDesktopNotifications()}
+      >
         <div class="title">${t("get_notified_new_messages")}</div>
         <div><a>${t("turn_on_desktop_notifications")}</a></div>
       </div>
       <div class="chat-list">
-        <${ScrollViewport}>
-          ${this.state.sortedChats.map(
-            (pubkey) =>
-              html`<${ChatListItem}
-                active=${pubkey === activeChat}
-                key=${pubkey}
-                chat=${pubkey}
-                latestMsgId=${this.state.chats.get(pubkey).eventIds[0]}
-              />`
-          )}
-        </${ScrollViewport}>
+        ${this.state.sortedChats.map(
+          (pubkey) =>
+            html`<${ChatListItem}
+              active=${pubkey === activeChat}
+              key=${pubkey}
+              chat=${pubkey}
+              latestMsgId=${this.state.chats.get(pubkey).eventIds[0]}
+            />`
+        )}
       </div>
     </section>`;
   }

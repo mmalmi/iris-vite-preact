@@ -1,5 +1,4 @@
 import throttle from "lodash/throttle";
-import ScrollViewport from "preact-scroll-viewport";
 
 import { PrimaryButton as Button } from "../components/buttons/Button";
 import Follow from "../components/buttons/Follow";
@@ -159,11 +158,7 @@ class Follows extends View {
           ""
         )}
         <div id="follows-list">
-          {this.state.follows.length > 300 ? (
-            <ScrollViewport>{this.renderFollows()}</ScrollViewport>
-          ) : (
-            this.renderFollows()
-          )}
+          {this.renderFollows() /* TODO limit if lots of follows */}
           {this.state.follows.length === 0 ? "—" : ""}
         </div>
       </div>
