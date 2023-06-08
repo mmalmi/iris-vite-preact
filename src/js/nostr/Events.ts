@@ -70,6 +70,8 @@ const Events = {
   futureEventIds: new SortedLimitedEventSet(100, false),
   futureEventTimeout: 0,
   notificationsSeenTime: 0,
+  myBlockEvent: null as Event | null,
+  myFlagEvent: null as Event | null,
   handleNote(event: Event) {
     const has = this.db.by("id", event.id);
     if (!has) {
@@ -170,7 +172,7 @@ const Events = {
     if (!this.likesByMessageId.has(id)) {
       this.likesByMessageId.set(id, new Set());
     }
-    this.likesByMessageId.get(id).add(event.pubkey);
+    this.likesByMessageId.get(id)?.add(event.pubkey);
     this.insert(event);
   },
   handleFollow(event: Event) {
@@ -207,7 +209,7 @@ const Events = {
     if (SocialNetwork.followedByUser.has(event.pubkey)) {
       for (const previouslyFollowed of SocialNetwork.followedByUser.get(
         event.pubkey
-      )) {
+      ) || []) {
         if (
           !event.tags ||
           !event.tags?.find((t) => t[0] === "p" && t[1] === previouslyFollowed)
@@ -217,7 +219,7 @@ const Events = {
       }
     }
     if (event.pubkey === myPub && event.tags?.length) {
-      if (SocialNetwork.followedByUser.get(myPub)?.size > 10) {
+      if ((SocialNetwork.followedByUser.get(myPub)?.size || 0) > 10) {
         localState.get("showFollowSuggestions").put(false);
       }
     }
@@ -243,7 +245,7 @@ const Events = {
     }
   },
   async handleBlockList(event: Event) {
-    if (this.myBlockEvent?.created_at > event.created_at) {
+    if ((this.myBlockEvent?.created_at || -Infinity) > event.created_at) {
       return;
     }
     this.myBlockEvent = event;
@@ -260,7 +262,7 @@ const Events = {
     }
   },
   handleFlagList(event: Event) {
-    if (this.myFlagEvent?.created_at > event.created_at) {
+    if ((this.myFlagEvent?.created_at || 0) > event.created_at) {
       return;
     }
     const myPub = Key.getPubKey();
@@ -368,7 +370,7 @@ const Events = {
     const key = event.tags?.find((tag) => tag[0] === "d")?.[1];
     if (key) {
       const existing = this.keyValueEvents.get(key);
-      if (existing?.created_at >= event.created_at) {
+      if ((existing?.created_at || -Infinity) >= event.created_at) {
         return;
       }
       this.keyValueEvents.set(key, event);
@@ -396,15 +398,17 @@ const Events = {
         // unless we specifically subscribed to the user or post, ignore long follow distance users
         if (SocialNetwork.followDistanceByUser.has(event.pubkey)) {
           const distance = SocialNetwork.followDistanceByUser.get(event.pubkey);
-          if (distance > globalFilter.maxFollowDistance) {
+          if (distance && distance > globalFilter.maxFollowDistance) {
             // follow distance too high, reject
             return false;
           }
           if (distance === globalFilter.maxFollowDistance) {
             // require at least 5 followers
             // TODO followers should be follow distance 2
+            const followerCount =
+              SocialNetwork.followersByUser.get(event.pubkey)?.size || 0;
             if (
-              SocialNetwork.followersByUser.get(event.pubkey)?.size <
+              followerCount <
               (globalFilter.minFollowersAtMaxDistance ||
                 DEFAULT_GLOBAL_FILTER.minFollowersAtMaxDistance)
             ) {
@@ -415,11 +419,9 @@ const Events = {
             }
           }
         } else {
-          if (
-            event.kind === 1 &&
-            (Events.likesByMessageId.get(event.id)?.size > 0 ||
-              Events.repostsByMessageId.get(event.id)?.size > 0)
-          ) {
+          const likes = Events.likesByMessageId.get(event.id)?.size || 0;
+          const reposts = Events.repostsByMessageId.get(event.id)?.size || 0;
+          if (event.kind === 1 && (likes > 0 || reposts > 0)) {
             // allow messages that have been liked by at least 1 user
           } else {
             // unconnected user, reject
@@ -454,7 +456,7 @@ const Events = {
     force = false,
     saveToIdb = true
   ): boolean {
-    if (!event) return;
+    if (!event) return false;
     if (!force && this.seen.has(event.id)) {
       return false;
     }
@@ -529,13 +531,19 @@ const Events = {
         this.maybeAddNotification(event);
         this.handleZap(event);
         break;
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       case 16462:
         // TODO return if already have
         this.handleBlockList(event);
         break;
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       case 16463:
         this.handleFlagList(event);
         break;
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       case 30000:
         this.handleKeyValue(event);
         break;
@@ -546,9 +554,8 @@ const Events = {
     // TODO since we're only querying relays since lastSeen, we need to store all beforeseen events and correctly query them on demand
     // otherwise feed will be incomplete
     if (saveToIdb) {
-      const followDistance = SocialNetwork.followDistanceByUser.get(
-        event.pubkey
-      );
+      const followDistance =
+        SocialNetwork.followDistanceByUser.get(event.pubkey) || Infinity;
       if (followDistance <= 1) {
         // save all our own events and events from people we follow
         if (dev.indexedDbSave !== false) {
@@ -644,8 +651,9 @@ const Events = {
           event.id; // TODO get thread root instead
         const key = `${event.kind}-${target}`;
         const existing = this.latestNotificationByTargetAndKind.get(key); // also latestNotificationByAuthor?
-        if (!existing || existing.created_at < event.created_at) {
-          this.notifications.delete(existing?.id);
+        const existingEvent = existing && this.db.by("id", existing);
+        if (!existing || existingEvent.created_at < event.created_at) {
+          existing && this.notifications.delete(existing);
           this.notifications.add(event);
           this.latestNotificationByTargetAndKind.set(key, event.id);
         }
@@ -681,7 +689,7 @@ const Events = {
     delete event["$loki"];
     delete event["meta"];
     if (!event.sig) {
-      await this.sign(event);
+      await this.sign(event as EventTemplate);
     }
     if (!(event.id && event.sig)) {
       console.error("Invalid event", event);
@@ -695,10 +703,10 @@ const Events = {
 
     // also publish at most 10 events referred to in tags
     const referredEvents = event.tags
-      .filter((tag) => tag[0] === "e")
+      ?.filter((tag) => tag[0] === "e")
       .reverse()
       .slice(0, 10);
-    for (const ref of referredEvents) {
+    for (const ref of referredEvents || []) {
       const referredEvent = this.db.by("id", ref[1]);
       if (referredEvent) {
         delete referredEvent.meta;
@@ -708,7 +716,7 @@ const Events = {
     }
     return event as Event;
   },
-  async sign(event: EventTemplate) {
+  async sign(event: any) {
     if (!event.tags) {
       event.tags = [];
     }
@@ -742,7 +750,7 @@ const Events = {
       likedBy: Set<string>,
       threadReplyCount: number,
       repostedBy: Set<string>,
-      zaps: Set<string>
+      zaps: Set<string> | SortedLimitedEventSet
     ) => void
   ): Unsubscribe {
     const callback = () => {
@@ -772,7 +780,7 @@ const Events = {
     if (proxyFirst) {
       // give proxy 300 ms to respond, then ask ws
       const askRelaysTimeout = setTimeout(() => {
-        PubSub.subscribe({ ids: [id] }, (event) => cb(event));
+        PubSub.subscribe({ ids: [id] }, (event) => cb?.(event));
       }, 300);
       fetch(`https://api.iris.to/event/${id}`).then((res) => {
         if (res.status === 200) {
@@ -795,7 +803,7 @@ const Events = {
     cb?: (messageIds: string[]) => void
   ): Unsubscribe {
     const callback = () => {
-      cb?.(this.directMessagesByUser.get(address)?.eventIds);
+      cb?.(this.directMessagesByUser.get(address)?.eventIds ?? []);
     };
     this.directMessagesByUser.has(address) && callback();
     const myPub = Key.getPubKey();
@@ -812,19 +820,9 @@ const Events = {
       unsub2();
     };
   },
-  getDirectMessages(cb?: (event: Event) => void): Unsubscribe {
-    const callback = () => {
-      cb?.(this.directMessagesByUser);
-    };
-    callback();
-    const unsub1 = PubSub.subscribe(
-      { kinds: [4], "#p": [Key.getPubKey()] },
-      callback
-    );
-    const unsub2 = PubSub.subscribe(
-      { kinds: [4], authors: [Key.getPubKey()] },
-      callback
-    );
+  getDirectMessages(): Unsubscribe {
+    const unsub1 = PubSub.subscribe({ kinds: [4], "#p": [Key.getPubKey()] });
+    const unsub2 = PubSub.subscribe({ kinds: [4], authors: [Key.getPubKey()] });
     return () => {
       unsub1();
       unsub2();

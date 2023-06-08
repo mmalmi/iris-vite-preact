@@ -52,7 +52,7 @@ export default function Zap(props: Props) {
             _b: Set<string>,
             _c: number,
             _d: Set<string>,
-            zappedBy: Set<string>
+            zappedBy: any
           ) => {
             setAllZaps(Array.from(zappedBy.values()));
           }

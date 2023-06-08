@@ -177,7 +177,7 @@ const Reactions = (props) => {
     likedBy: Set<string>,
     threadReplyCount: number,
     repostedBy: Set<string>,
-    zaps: Set<string>
+    zaps: any
   ) {
     // zaps.size &&
     //  console.log('zaps.size', zaps.size, Key.toNostrBech32Address(event.id, 'note'));
