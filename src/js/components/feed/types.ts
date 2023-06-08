@@ -23,4 +23,3 @@ export interface FeedState {
   settingsOpen?: boolean;
   showNewMsgsFixedTop?: boolean;
 }
-

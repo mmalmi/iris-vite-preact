@@ -160,9 +160,7 @@ class Follows extends View {
         )}
         <div id="follows-list">
           {this.state.follows.length > 300 ? (
-            <ScrollViewport>
-              {this.renderFollows()}
-            </ScrollViewport>
+            <ScrollViewport>{this.renderFollows()}</ScrollViewport>
           ) : (
             this.renderFollows()
           )}

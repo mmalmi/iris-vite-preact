@@ -4,7 +4,8 @@ import {
   generatePrivateKey,
   getPublicKey,
   nip04,
-  signEvent, UnsignedEvent,
+  signEvent,
+  UnsignedEvent,
 } from "nostr-tools";
 import { route } from "preact-router";
 

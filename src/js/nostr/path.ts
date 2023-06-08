@@ -138,6 +138,9 @@ export class Path {
       content = JSON.stringify(value);
     }
     return this.publish({
+      // kind does not accept 30000...
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       kind: EVENT_KIND,
       tags: [["d", path]],
       content,

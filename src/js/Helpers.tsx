@@ -9,10 +9,10 @@ import { route } from "preact-router";
 
 import EventComponent from "./components/events/EventComponent";
 import Name from "./components/Name";
-import SafeImg, { isSafeOrigin } from "./components/SafeImg";
+import SafeImg from "./components/SafeImg";
 import Torrent from "./components/Torrent";
 import Key from "./nostr/Key";
-import { language, translate as t } from "./translations/Translation";
+import { language, translate as t } from "./translations/Translation.mjs";
 import localState from "./LocalState";
 
 const emojiRegex =
@@ -30,18 +30,6 @@ localState.get("settings").on((s) => (settings = s));
 let existingIrisToAddress: any = {};
 localState.get("settings").put({}); // ?
 localState.get("existingIrisToAddress").on((a) => (existingIrisToAddress = a));
-
-function setImgSrc(el: JQuery<HTMLElement>, src: string): JQuery<HTMLElement> {
-  if (src) {
-    // parse src as url safely
-    src = new URL(src).href;
-    if (!isSafeOrigin(src)) {
-      src = `https://imgproxy.iris.to/insecure/plain/${src}`;
-    }
-    el.attr("src", src);
-  }
-  return el;
-}
 
 const userAgent = navigator.userAgent.toLowerCase();
 const isElectron = userAgent.indexOf(" electron/") > -1;
@@ -154,7 +142,7 @@ export default {
         return (
           <EventComponent
             key={match + i}
-            id={Key.toNostrHexAddress(match)}
+            id={Key.toNostrHexAddress(match) || ""}
             asInlineQuote={true}
           />
         );
@@ -788,6 +776,7 @@ export default {
         document.body.removeChild(textarea);
       }
     }
+    return false;
   },
 
   showConsoleWarning(): void {
@@ -965,8 +954,6 @@ export default {
       );
     }
   }, 100),
-
-  setImgSrc,
 
   animateScrollTop: (selector: string): void => {
     const el = $(selector);
