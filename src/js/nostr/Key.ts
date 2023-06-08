@@ -26,7 +26,8 @@ type Key = {
 };
 
 export default {
-  windowNostrQueue: [],
+  key: undefined as any,
+  windowNostrQueue: [] as any[],
   isProcessingQueue: false,
   getPublicKey, // TODO confusing similarity to getPubKey
   loginAsNewUser(redirect = false) {
@@ -85,9 +86,9 @@ export default {
   },
   encrypt: async function (data: string, pub?: string): Promise<string> {
     const k = this.key;
-    pub = pub || k.rpub;
+    pub = pub || k.rpub || "";
     if (k.priv) {
-      return nip04.encrypt(k.priv, pub, data);
+      return nip04.encrypt(k.priv, pub as string, data);
     } else if (window.nostr) {
       return new Promise((resolve) => {
         this.processWindowNostr({
@@ -103,9 +104,9 @@ export default {
   },
   decrypt: async function (data, pub?: string): Promise<string> {
     const k = this.key;
-    pub = pub || k.rpub;
+    pub = pub || k.rpub || "";
     if (k.priv) {
-      return nip04.decrypt(k.priv, pub, data);
+      return nip04.decrypt(k.priv, pub as string, data);
     } else if (window.nostr) {
       return new Promise((resolve) => {
         this.processWindowNostr({
@@ -186,7 +187,7 @@ export default {
         return;
       }
 
-      let decrypted = await this.decrypt(msg.content, theirPub);
+      let decrypted = (await this.decrypt(msg.content, theirPub)) as any;
       if (decrypted.content) {
         decrypted = decrypted.content; // what? TODO debug
       }

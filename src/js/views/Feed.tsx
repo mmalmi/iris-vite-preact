@@ -7,7 +7,6 @@ import View from "./View";
 class Feed extends View {
   constructor() {
     super();
-    this.eventListeners = {};
     this.state = { sortedMessages: [] };
     this.id = "message-view";
     this.class = "public-messages-view";

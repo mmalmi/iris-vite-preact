@@ -14,7 +14,7 @@ import SocialNetwork from "../nostr/SocialNetwork";
 import { translate as t } from "../translations/Translation.mjs";
 
 type Props = {
-  fullScreen: boolean;
+  fullScreen?: boolean;
 };
 
 type State = {

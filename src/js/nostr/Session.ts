@@ -48,6 +48,9 @@ const Session = {
       location.reload();
     });
   },
+  unsubscribe(..._args) {
+    // wat dis
+  },
   onLoggedIn() {
     const myPub = Key.getPubKey();
     SocialNetwork.followDistanceByUser.set(myPub, 0);
