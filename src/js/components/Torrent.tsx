@@ -14,7 +14,21 @@ const isImage = (f) => isOfType(f, [".jpg", "jpeg", ".gif", ".png"]);
 
 class Torrent extends Component {
   coverRef = createRef();
-  state = { settings: {} };
+  state = {
+    settings: {} as any,
+    player: {} as any,
+    activeFilePath: "",
+    torrent: {} as any,
+    isAudioOpen: false,
+    showFiles: false,
+    torrenting: false,
+    hasNext: false,
+    splitPath: null as any,
+    ogImageUrl: "",
+  };
+  player: any;
+  torrent: any;
+  observer: any;
 
   componentDidMount() {
     console.log("componentDidMount torrent");
@@ -57,7 +71,7 @@ class Torrent extends Component {
     }
   }
 
-  async startTorrenting(clicked) {
+  async startTorrenting(clicked?: boolean) {
     this.setState({ torrenting: true });
     const torrentId = this.props.torrentId;
     const { default: AetherTorrent } = await import("aether-torrent");
@@ -73,7 +87,7 @@ class Torrent extends Component {
     }
   }
 
-  playAudio(filePath, e) {
+  playAudio(filePath, e?) {
     e && e.preventDefault();
     localState
       .get("player")
@@ -85,8 +99,8 @@ class Torrent extends Component {
     localState.get("player").put({ paused: true });
   }
 
-  openFile(file, clicked) {
-    const base = document.querySelector(this.base);
+  openFile(file, clicked?: boolean) {
+    const base = this.base as Element;
     const isVid = isVideo(file);
     const isAud = !isVid && isAudio(file);
     if (this.state.activeFilePath === file.path) {
@@ -112,8 +126,8 @@ class Torrent extends Component {
       autoplay = isVid && this.state.settings.autoplayVideos;
       muted = autoplay;
     }
-    const el = base.querySelector(".player");
-    el.innerHTML = "";
+    const el = base?.querySelector(".player");
+    el && (el.innerHTML = "");
     if (isAud && clicked) {
       this.playAudio(file.path);
     }
@@ -125,9 +139,9 @@ class Torrent extends Component {
       const handlePlay = (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            autoplay && vid.play();
+            autoplay && vid?.play();
           } else {
-            vid.pause();
+            vid?.pause();
           }
         });
       };
@@ -139,8 +153,9 @@ class Torrent extends Component {
       this.observer.observe(vid);
     }
 
-    base.querySelector(".info").style.display = !isVid ? "block" : "none";
-    const player = base.querySelector("video, audio");
+    const info = base.querySelector(".info") as HTMLElement;
+    info && (info.style.display = !isVid ? "block" : "none");
+    const player = base.querySelector("video, audio") as HTMLMediaElement;
     if (player) {
       player.addEventListener("ended", () => {
         const typeCheck = player.tagName === "VIDEO" ? isVideo : isAudio;
@@ -233,7 +248,7 @@ class Torrent extends Component {
     const to = s.torrent;
     const p = s.player;
     const playing = p && p.torrentId === this.props.torrentId && !p.paused;
-    let playButton = "";
+    let playButton = "" as any;
     if (s.isAudioOpen) {
       playButton = playing ? (
         <a href="#" onClick={(e) => this.pauseAudio(e)}>
@@ -301,7 +316,7 @@ class Torrent extends Component {
               {to.files.map((f) => (
                 <div
                   key={f.path}
-                  onClick={(e) => this.openFile(f, e)}
+                  onClick={() => this.openFile(f, true)}
                   className={`flex-row ${
                     s.activeFilePath === f.path ? "active" : ""
                   }`}
