@@ -9,10 +9,22 @@ import Events from "../../nostr/Events";
 import Key from "../../nostr/Key";
 import SocialNetwork from "../../nostr/SocialNetwork";
 
+declare global {
+  interface Window {
+    cf_turnstile_callback: any;
+  }
+}
+
 export default class IrisAccount extends Component {
   state = {
     irisToActive: false,
-    existing: null,
+    existing: null as any,
+    profile: null as any,
+    newUserName: "",
+    newUserNameValid: false,
+    error: null as any,
+    showChallenge: false,
+    invalidUsernameMessage: null as any,
   };
 
   renderAccountName(name, link = true) {
@@ -45,7 +57,7 @@ export default class IrisAccount extends Component {
   }
 
   render() {
-    let view = "";
+    let view: any;
 
     if (this.state.irisToActive) {
       const username = this.state.profile.nip05.split("@")[0];
@@ -216,7 +228,7 @@ export default class IrisAccount extends Component {
   async register(cfToken) {
     console.log("register", cfToken);
     const pubkey = Key.getPubKey();
-    const event = {
+    const event: any = {
       content: `iris.to/${this.state.newUserName}`,
       kind: 1,
       tags: [],
@@ -273,7 +285,7 @@ export default class IrisAccount extends Component {
 
   async enableReserved() {
     const pubkey = Key.getPubKey();
-    const event = {
+    const event: any = {
       content: `iris.to/${this.state.existing.name}`,
       kind: 1,
       tags: [],

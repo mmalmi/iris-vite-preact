@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { XMarkIcon } from "@heroicons/react/24/solid";
 import { Event } from "nostr-tools";
 import styled from "styled-components";
@@ -49,7 +49,7 @@ export interface ZapProps {
 }
 
 function chunks<T>(arr: T[], length: number) {
-  const result = [];
+  const result = [] as any;
   let idx = 0;
   let n = arr.length / length;
   while (n > 0) {
@@ -444,7 +444,7 @@ export default function SendSats(props: ZapProps) {
           <div className="lnurl-header">
             <h2>
               {props.title || title}
-              <Name pub={recipient} />
+              <Name pub={recipient || ""} />
             </h2>
           </div>
           {invoiceForm()}

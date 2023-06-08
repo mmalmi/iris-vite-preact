@@ -13,7 +13,7 @@ import { translate as t } from "../../translations/Translation.mjs";
 export default class Backup extends Component {
   profileExportJson() {
     const myPub = Key.getPubKey();
-    let rawDataJson = [];
+    let rawDataJson = [] as any;
     const profileEvent = Events.db.findOne({ kind: 0, pubkey: myPub });
     const followEvent = Events.db.findOne({ kind: 3, pubkey: myPub });
     profileEvent && rawDataJson.push(profileEvent);
@@ -25,7 +25,7 @@ export default class Backup extends Component {
   async exportMyEvents() {
     console.log("exporting my events");
     const pubkey = Key.getPubKey();
-    const events = [];
+    const events = [] as any[];
     let i = 0;
     this.setState({ downloadMyEventsMessage: "Fetching events..." });
     await IndexedDB.db.events.where({ pubkey }).each((event) => {
@@ -61,7 +61,6 @@ export default class Backup extends Component {
             <Copy
               key={`${this.state.hexPub}copyData`}
               text={t("copy_raw_data")}
-              title={this.state.name}
               copyStr={() => this.profileExportJson()}
             />
           </p>
@@ -90,7 +89,9 @@ export default class Backup extends Component {
           </p>
           <p>
             <textarea
-              onInput={(e) => this.import(e.target.value)}
+              onInput={(e) =>
+                this.import((e.target as HTMLTextAreaElement).value)
+              }
               placeholder={t("paste_event_json")}
             ></textarea>
           </p>
@@ -144,7 +145,7 @@ export default class Backup extends Component {
       document.body.appendChild(downloadAnchorNode); // required for firefox
       downloadAnchorNode.click();
       downloadAnchorNode.remove();
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
       this.setState({ saveError: e.message, downloadMyEventsMessage: null });
     }
@@ -155,12 +156,16 @@ export default class Backup extends Component {
     input.type = "file";
     input.accept = ".json";
     input.onchange = (e) => {
-      const file = e.target.files[0];
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        this.import(e.target.result);
-      };
-      reader.readAsText(file);
+      const target = e.target as HTMLInputElement;
+      const file = target.files?.[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (_e) => {
+          // 'reader.result' contains the content of the file
+          this.import(reader.result as string);
+        };
+        reader.readAsText(file);
+      }
     };
     input.click();
   }
@@ -203,7 +208,7 @@ export default class Backup extends Component {
         }
       }
       this.setState({ loadError: null, importedEvents: json.length });
-    } catch (e) {
+    } catch (e: any) {
       this.setState({ loadError: e.message });
     }
   }
