@@ -27,6 +27,11 @@ import { translate as t } from "../translations/Translation.mjs";
 import View from "./View";
 
 class Profile extends View {
+  followedUsers: Set<string>;
+  followers: Set<string>;
+  subscriptions: any[];
+  unsub: any;
+
   constructor() {
     super();
     this.state = {
@@ -121,7 +126,7 @@ class Profile extends View {
         width="250"
       />`;
     }
-    let rawDataJson = [];
+    let rawDataJson = [] as any;
     const profileEvent = Events.db.findOne({
       kind: 0,
       pubkey: this.state.hexPub,
@@ -516,7 +521,7 @@ class Profile extends View {
     this.subscriptions.push(unsub);
   }
 
-  loadProfile(hexPub, nostrAddress) {
+  loadProfile(hexPub: string, nostrAddress?: string) {
     const isMyProfile = hexPub === Key.getPubKey();
     this.setState({ isMyProfile });
     this.followedUsers = new Set();
@@ -535,7 +540,7 @@ class Profile extends View {
     this.unsub?.();
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(_prevProps, prevState) {
     if (!prevState.name && this.state.name) {
       this.unsub?.();
       setTimeout(() => {

@@ -14,7 +14,7 @@ type Subscription = {
   callback?: (event: Event) => void;
 };
 
-type Unsubscribe = () => void;
+export type Unsubscribe = () => void;
 
 let subscriptionId = 0;
 
@@ -56,6 +56,8 @@ relayPool.onauth(async (relay, challenge) => {
     return;
   }
   try {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     await authenticate({ relay, challenge, sign: Events.sign });
   } catch (e) {
     console.log("error: authenticate to relay:", e);
@@ -206,6 +208,8 @@ const PubSub = {
     mergeSubscriptions: boolean
   ) {
     let relays: any;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     if (filter.keywords) {
       // TODO bomb all relays with searches, or add more search relays
       relays = Array.from(Relays.searchRelays.keys());
@@ -247,4 +251,3 @@ const PubSub = {
 };
 
 export default PubSub;
-export { Unsubscribe };

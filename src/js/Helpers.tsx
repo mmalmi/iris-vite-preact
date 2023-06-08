@@ -639,7 +639,7 @@ export default {
   })(),
 
   // hashtags, usernames, links
-  highlightText(s: string, event: any, opts: any = {}) {
+  highlightText(s: string, event?: any, opts: any = {}) {
     s = reactStringReplace(s, pubKeyRegex, (match, i) => {
       match = match.replace(/@/g, "");
       const link = `/${match}`;
@@ -713,7 +713,7 @@ export default {
       }
     );
 
-    if (event && event.tags) {
+    if (event?.tags) {
       // replace "#[n]" tags with links to the user: event.tags[n][1]
       s = reactStringReplace(s, /#\[(\d+)\]/g, (match, i) => {
         const tag = event.tags[parseInt(match, 10)];

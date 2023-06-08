@@ -13,7 +13,25 @@ import Key from "../nostr/Key";
 import SocialNetwork from "../nostr/SocialNetwork";
 import { translate as t } from "../translations/Translation.mjs";
 
-class Login extends Component {
+type Props = {
+  fullScreen: boolean;
+};
+
+type State = {
+  showSwitchAccount: boolean;
+  privateKeyError: string | null;
+  showEula: boolean;
+  inputStyle: any;
+};
+
+class Login extends Component<Props, State> {
+  state = {
+    showSwitchAccount: false,
+    privateKeyError: null,
+    showEula: false,
+    inputStyle: null as any,
+  };
+
   componentDidMount() {
     const el = document.getElementById("login-form-name");
     el && el.focus();
@@ -78,7 +96,10 @@ class Login extends Component {
   }
 
   loginAsNewUser() {
-    const display_name = document.getElementById("login-form-name").value;
+    const element = document.getElementById(
+      "login-form-name"
+    ) as HTMLInputElement;
+    const display_name = element?.value;
     Key.loginAsNewUser(this.props.fullScreen);
     localState.get("showFollowSuggestions").put(true);
     display_name &&
@@ -86,7 +107,6 @@ class Login extends Component {
         SocialNetwork.setMetadata({ display_name });
       }, 100);
     // follow the developer's nostr key also
-    this.base.style = "display:none";
     const now = Math.floor(Date.now() / 1000);
     Events.notificationsSeenTime = now;
   }
@@ -157,7 +177,7 @@ class Login extends Component {
                   autocomplete="off"
                   autocorrect="off"
                   autocapitalize="sentences"
-                  spellcheck="off"
+                  spellcheck={false}
                   id="login-form-name"
                   type="text"
                   name="name"
