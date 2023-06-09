@@ -19,7 +19,7 @@ import SearchBox from "./SearchBox";
 
 export default class Header extends Component {
   chatId = null as string | null;
-  iv = null as number | null;
+  iv = null as any;
 
   constructor() {
     super();

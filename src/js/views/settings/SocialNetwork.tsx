@@ -9,7 +9,7 @@ import SocialNetwork from "../../nostr/SocialNetwork";
 import { translate as t } from "../../translations/Translation.mjs";
 
 export default class SocialNetworkSettings extends Component {
-  private refreshInterval: number | undefined;
+  private refreshInterval: any;
   constructor() {
     super();
     this.state = {

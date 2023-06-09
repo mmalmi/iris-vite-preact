@@ -68,7 +68,7 @@ const Events = {
   handledMsgsPerSecond: 0,
   decryptedMessages: new Map<string, string>(),
   futureEventIds: new SortedLimitedEventSet(100, false),
-  futureEventTimeout: 0,
+  futureEventTimeout: null as any,
   notificationsSeenTime: 0,
   myBlockEvent: null as Event | null,
   myFlagEvent: null as Event | null,
